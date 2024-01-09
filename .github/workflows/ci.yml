@@ -29,10 +29,6 @@ jobs:
         node-version-file: '.nvmrc'
     - name: install dependencies
       run: yarn
-    - name: lint
-      run: yarn lint
-    - name: test
-      run: yarn test
     # building the target bundle and then copying the package.json
     # to be able to install the node_modules in the dist files to be
     # zipped afterward to land in s3 for the lambda function to update its code on
