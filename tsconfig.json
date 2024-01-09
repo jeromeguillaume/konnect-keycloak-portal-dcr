@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "strictNullChecks": true,
+    "allowSyntheticDefaultImports": true,
+    // "strict": true,
+    "target": "es6",
+    "module": "commonjs",
+    //"module": "ESNext",
+    "removeComments": true,
+    "sourceMap": true,
+    "newLine": "lf",
+    "esModuleInterop": true,
+    "baseUrl": "./src",
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "outDir": "dist",
+    "typeRoots": ["./src/types.d.ts", "./node_modules/@types"],
+    "lib": ["ES2018"]
+  },
+  //"ts-node": {
+  //  "esm": true
+  //},
+  "include": ["./src/**/*.ts"],
+  "exclude": ["node_modules"]
+}

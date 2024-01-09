@@ -1,0 +1,43 @@
+curl -k -X POST \
+    -d '{ "clientId": "jeg-client" }' \
+    -H "Content-Type:application/json" \
+    -H "Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJjYThiMDBjZS05YzJlLTQ2MWUtOWVkNC0zNmRmZjkxMjUxZjYifQ.eyJleHAiOjE3OTA3ODI1NTQsImlhdCI6MTcwNDQ2ODk1NCwianRpIjoiYTI2NTk1NDQtZWFlZi00MTY3LTliZWMtYjg4NzcwZDlkZjRhIiwiaXNzIjoiaHR0cHM6Ly9zc28uYXBpbS5ldTo4NDQzL2F1dGgvcmVhbG1zL0plcm9tZSIsImF1ZCI6Imh0dHBzOi8vc3NvLmFwaW0uZXU6ODQ0My9hdXRoL3JlYWxtcy9KZXJvbWUiLCJ0eXAiOiJJbml0aWFsQWNjZXNzVG9rZW4ifQ.rsD3A0_RNKhQccA5dq6CCdI6N5_I5Fbzx9utNDzZYjM" \
+    https://sso.apim.eu:8443/auth/realms/Jerome/clients-registrations/default
+
+curl -k -X POST \
+    -d '{ "client_name": "jeg2-client" }' \
+    -H "Content-Type:application/json" \
+    -H "Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJjYThiMDBjZS05YzJlLTQ2MWUtOWVkNC0zNmRmZjkxMjUxZjYifQ.eyJleHAiOjE3OTA3ODI1NTQsImlhdCI6MTcwNDQ2ODk1NCwianRpIjoiYTI2NTk1NDQtZWFlZi00MTY3LTliZWMtYjg4NzcwZDlkZjRhIiwiaXNzIjoiaHR0cHM6Ly9zc28uYXBpbS5ldTo4NDQzL2F1dGgvcmVhbG1zL0plcm9tZSIsImF1ZCI6Imh0dHBzOi8vc3NvLmFwaW0uZXU6ODQ0My9hdXRoL3JlYWxtcy9KZXJvbWUiLCJ0eXAiOiJJbml0aWFsQWNjZXNzVG9rZW4ifQ.rsD3A0_RNKhQccA5dq6CCdI6N5_I5Fbzx9utNDzZYjM" \
+    https://sso.apim.eu:8443/auth/realms/Jerome/clients-registrations/openid-connect
+
+
+curl -k -X DELETE \
+    -H "Content-Type:application/json" \
+    -H "Authorization: bearer TO-BE-REPLACED" \
+    https://sso.apim.eu:8443/auth/realms/Jerome/clients-registrations/default/d3619ed3-6d5e-494a-98d4-221eebe73837
+
+# Get Access token
+http -f -a kong-sa:JJDH69SR88ubsajvsCPABgwfXjwCI5pD POST https://sso.apim.eu:8443/auth/realms/Jerome/protocol/openid-connect/token grant_type=client_credentials
+
+# Liste des clients
+http  https://sso.apim.eu:8443/auth/admin/realms/Jerome/clients Authorization:'Bearer TO-BE-REPLACED'
+
+# Suppression d'un client
+http  DELETE https://sso.apim.eu:8443/auth/realms/Jerome/clients-registrations/default/d3619ed3-6d5e-494a-98d4-221eebe73837 Authorization:'Bearer TO-BE-REPLACED'
+
+#######################
+# Create a new CLIENT
+http POST :3000/ redirect_uris=http://localhost \
+    x-api-key:1234567890 \
+    client_name=jegvscode1 \
+    application_description=\
+    grant_types\[\]=authorization_code \
+    grant_types\[\]=refresh_token \
+    grant_types\[\]=implicit \
+    token_endpoint_auth_method=client_secret_jwt \
+    portal_id=02696642-6274-469d-b0d1-1bfdd1adbb40 \
+    organization_id=1ac2a6d7-cc38-458d-8573-0f9868f8ac6c
+
+# DELETE a new CLIENT
+ http DELETE :3000/d7c17995-889b-4230-a1af-a2acf9dd3f55 \
+ x-api-key:1234567890
