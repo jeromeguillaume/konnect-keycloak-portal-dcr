@@ -20,13 +20,15 @@ export async function init (config: serviceConfig = {}) {
   await app.register(fastifyEnv, {
     schema: {
       type: 'object',
-      required: ['KEYCLOAK_API_TOKEN', 'KEYCLOAK_DOMAIN', 'KONG_API_TOKENS'],
+      required: ['KEYCLOAK_API_TOKEN', 'KEYCLOAK_CLIENT_ID', 'KEYCLOAK_CLIENT_SECRET', 'KEYCLOAK_DOMAIN', 'KONG_API_TOKENS'],
       properties: {
         KONG_API_TOKENS: {
           type: 'string',
           separator: ','
         },
         KEYCLOAK_API_TOKEN: { type: 'string' },
+        KEYCLOAK_CLIENT_ID: { type: 'string' },
+        KEYCLOAK_CLIENT_SECRET: { type: 'string' },
         KEYCLOAK_DOMAIN: { type: 'string' }
       }
     },
@@ -83,6 +85,8 @@ declare module 'fastify' {
     httpClient: AxiosInstance
     config: {
       KONG_API_TOKENS: string[]
+      KEYCLOAK_CLIENT_ID: string
+      KEYCLOAK_CLIENT_SECRET: string
       KEYCLOAK_API_TOKEN: string
       KEYCLOAK_DOMAIN: string
     }

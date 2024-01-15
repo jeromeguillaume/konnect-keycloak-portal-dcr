@@ -5,6 +5,8 @@ import type { ApplicationPayload } from '../schemas/ApplicationPayload'
 import { ApplicationPayloadSchema } from '../schemas/ApplicationPayload'
 import { EventHookSchema } from '../schemas/EventHook'
 
+import { Buffer } from 'node:buffer';
+
 /**
  * DCRHandlers registers the fastify plugin for Konnect DCR handlers in the fastify instance
  * it implements all the required routes and also protects the endpoints for with the `x-api-key` header
@@ -50,20 +52,20 @@ export function DCRHandlers (fastify: FastifyInstance, _: RegisterOptions, next:
 
       
       const headers = getHeaders(fastify.config.KEYCLOAK_API_TOKEN)
-      console.log("Keycloak request, uri='/clients-registrations/openid-connect'" + ", body=" + payloadKeycloak + ", headers= " + headers)
+      var url='clients-registrations/openid-connect'
+      console.log("Keycloak request, url='POST /%s', headers=%j, body=%j", url, headers, payloadKeycloak)
       const response = await fastify.httpClient.post(
-        'clients-registrations/openid-connect',
+        url,
         payloadKeycloak,
         { headers }
       )
-      console.log("Keycloak response=" + response.data)
+      console.log("Keycloak response, code=%d, data=%j", response.status, response.data)
       const application: ApplicationResponse = {
         client_id: response.data.client_id,
         client_id_issued_at: response.data.client_id_issued_at,
         client_secret: response.data.client_secret,
         client_secret_expires_at: response.data.client_secret_expires_at
       }
-      
       return reply.code(201).send(application)
     }
   })
@@ -73,13 +75,15 @@ export function DCRHandlers (fastify: FastifyInstance, _: RegisterOptions, next:
     method: 'DELETE',
     handler: async function (request: FastifyRequest<{ Params: { application_id: string } }>, reply: FastifyReply): Promise<FastifyReply> {
       
-      var accessToken = await getAccessToken(fastify, 'kong-sa', 'JJDH69SR88ubsajvsCPABgwfXjwCI5pD')
-      console.log('access_token: ' + accessToken)
+      var accessToken = await getAccessToken(fastify, fastify.config.KEYCLOAK_CLIENT_ID, fastify.config.KEYCLOAK_CLIENT_SECRET)
       var headers = getHeaders(accessToken)
-      await fastify.httpClient.delete(
-        `clients-registrations/default/${request.params.application_id}`,
+      var url = `clients-registrations/default/${request.params.application_id}`
+      //console.log("Keycloak request, url='DELETE %s', headers=%j", url, headers)
+      const response = await fastify.httpClient.delete(
+        url,
         { headers }
       )
+      console.log("Keycloak response, code=%d, data=%j", response.status, response.data)
       return reply.code(204).send()
     }
   })
@@ -130,8 +134,13 @@ function getHeaders (token: string) {
 }
 
 function getAuthBasicHeaders (client_id: string, client_secret: string) {
+  
+  var data = client_id + ':' + client_secret
+  
+  var buff = Buffer.from(data)
+  var base64data = buff.toString('base64')
   return {
-    Authorization: 'Basic a29uZy1zYTpKSkRINjlTUjg4dWJzYWp2c0NQQUJnd2ZYandDSTVwRA==',
+    Authorization: 'Basic ' + base64data,
     accept: 'application/json',
     'Content-Type': 'application/x-www-form-urlencoded;'
   }
