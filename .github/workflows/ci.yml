@@ -28,6 +28,18 @@ jobs:
     - uses: actions/setup-node@v4
       with:
         node-version-file: '.nvmrc'
+    - name: Configure AWS credentials
+    #  if: github.ref == 'refs/heads/main'
+    #  uses: aws-actions/configure-aws-credentials@v3.0.1
+    #  with:
+    #    role-to-assume: ${{ env.AWS_ROLE_NAME }}
+    #    aws-region: us-east-2
+    #    role-session-name: HttpDcrLambdaCiUsEast2
+    #    role-duration-seconds: 1200
+    #    mask-aws-account-id: 'true'
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: eu-west-3
     - name: install dependencies
       run: yarn
     # building the target bundle and then copying the package.json
@@ -44,15 +56,6 @@ jobs:
     - name: zip
       run: |
         cd dist && zip -r ../build.zip *
-    - name: Configure AWS credentials
-      if: github.ref == 'refs/heads/main'
-      uses: aws-actions/configure-aws-credentials@v3.0.1
-      with:
-        role-to-assume: ${{ env.AWS_ROLE_NAME }}
-        aws-region: us-east-2
-        role-session-name: HttpDcrLambdaCiUsEast2
-        role-duration-seconds: 1200
-        mask-aws-account-id: 'true'
     - name: Send to S3
       if: github.ref == 'refs/heads/main'
       run: |
