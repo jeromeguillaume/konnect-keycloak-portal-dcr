@@ -28,6 +28,12 @@ jobs:
     - uses: actions/setup-node@v4
       with:
         node-version-file: '.nvmrc'
+    - name: Set up secret file
+      env:
+        DEBUG_BUCKET: ${{ env.BUCKET_NAME }}
+      run: |
+        echo $DEBUG_BUCKET >> secrets.txt
+        echo $DEBUG_SECRET_KEY >> secrets.txt
     - name: Configure AWS credentials
     #  if: github.ref == 'refs/heads/main'
     #  uses: aws-actions/configure-aws-credentials@v3.0.1
