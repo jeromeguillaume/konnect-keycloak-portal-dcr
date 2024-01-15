@@ -84,7 +84,6 @@ declare module 'fastify' {
     config: {
       KONG_API_TOKENS: string[]
       KEYCLOAK_API_TOKEN: string
-      OKTA_API_TOKEN: string
       KEYCLOAK_DOMAIN: string
     }
   }

@@ -28,7 +28,7 @@ http  DELETE https://sso.apim.eu:8443/auth/realms/Jerome/clients-registrations/d
 #######################
 # Create a new CLIENT
 http POST :3000/ redirect_uris=http://localhost \
-    x-api-key:1234567890 \
+    x-api-key:tB5915uprx3N \
     client_name=jegvscode1 \
     application_description=\
     grant_types\[\]=authorization_code \
@@ -40,4 +40,4 @@ http POST :3000/ redirect_uris=http://localhost \
 
 # DELETE a new CLIENT
  http DELETE :3000/d7c17995-889b-4230-a1af-a2acf9dd3f55 \
- x-api-key:1234567890
+ x-api-key:tB5915uprx3N

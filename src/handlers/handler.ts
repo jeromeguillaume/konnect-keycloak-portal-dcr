@@ -29,6 +29,8 @@ export function DCRHandlers (fastify: FastifyInstance, _: RegisterOptions, next:
     handler: async function (request: FastifyRequest<{ Body: ApplicationPayload }>, reply: FastifyReply): Promise<FastifyReply> {
       const grantTypes: string[] = []
       const responseTypes: string[] = []
+      
+      console.log("POST /")
 
       if (request.body.grant_types.includes('client_credentials') || request.body.grant_types.includes('bearer')) {
         grantTypes.push('client_credentials')
