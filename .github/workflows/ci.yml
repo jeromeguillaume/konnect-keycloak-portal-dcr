@@ -14,7 +14,8 @@ env:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-latest
+    runs-on: self-hosted
     # environment and permissions are required when using the role-to-assume
     # function of aws-actions/configure-aws-credentials
     # More informations on: https://github.com/aws-actions/configure-aws-credentials
