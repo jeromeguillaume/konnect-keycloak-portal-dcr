@@ -30,17 +30,15 @@ export function DCRHandlers (fastify: FastifyInstance, _: RegisterOptions, next:
       const grantTypes: string[] = []
       const responseTypes: string[] = []
       
-      console.log("POST /")
-
       if (request.body.grant_types.includes('client_credentials') || request.body.grant_types.includes('bearer')) {
         grantTypes.push('client_credentials')
         responseTypes.push('token')
       }
+      
       responseTypes.length = 0
       responseTypes.push('code')
       responseTypes.push('id_token')
       responseTypes.push('token')
-
       const payloadKeycloak = {
         client_name: request.body.client_name,
         redirect_uris: request.body.redirect_uris,
@@ -52,12 +50,13 @@ export function DCRHandlers (fastify: FastifyInstance, _: RegisterOptions, next:
 
       
       const headers = getHeaders(fastify.config.KEYCLOAK_API_TOKEN)
+      console.log("Keycloak request, uri='/clients-registrations/openid-connect'" + ", body=" + payloadKeycloak + ", headers= " + headers)
       const response = await fastify.httpClient.post(
         'clients-registrations/openid-connect',
         payloadKeycloak,
         { headers }
       )
-      console.log(response.data)
+      console.log("Keycloak response=" + response.data)
       const application: ApplicationResponse = {
         client_id: response.data.client_id,
         client_id_issued_at: response.data.client_id_issued_at,

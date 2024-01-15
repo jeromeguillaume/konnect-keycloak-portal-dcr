@@ -16,7 +16,7 @@
     "moduleResolution": "node",
     "outDir": "dist",
     "typeRoots": ["./src/types.d.ts", "./node_modules/@types"],
-    "lib": ["ES2018"]
+    "lib": ["ES2018", "dom"]
   },
   //"ts-node": {
   //  "esm": true
