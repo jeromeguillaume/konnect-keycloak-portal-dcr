@@ -1,32 +1,40 @@
-curl -k -X POST \
-    -d '{ "clientId": "jeg-client" }' \
-    -H "Content-Type:application/json" \
-    -H "Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJjYThiMDBjZS05YzJlLTQ2MWUtOWVkNC0zNmRmZjkxMjUxZjYifQ.eyJleHAiOjE3OTA3ODI1NTQsImlhdCI6MTcwNDQ2ODk1NCwianRpIjoiYTI2NTk1NDQtZWFlZi00MTY3LTliZWMtYjg4NzcwZDlkZjRhIiwiaXNzIjoiaHR0cHM6Ly9zc28uYXBpbS5ldTo4NDQzL2F1dGgvcmVhbG1zL0plcm9tZSIsImF1ZCI6Imh0dHBzOi8vc3NvLmFwaW0uZXU6ODQ0My9hdXRoL3JlYWxtcy9KZXJvbWUiLCJ0eXAiOiJJbml0aWFsQWNjZXNzVG9rZW4ifQ.rsD3A0_RNKhQccA5dq6CCdI6N5_I5Fbzx9utNDzZYjM" \
-    https://sso.apim.eu:8443/auth/realms/Jerome/clients-registrations/default
+#############################################################
+# Test directly the Keycloak APIs
+#############################################################
+# 1 - Create a new CLIENT
+# Get Realm Settings/Client Registration/Initial Access Tokens
+http POST https://sso.apim.eu:8443/auth/realms/Jerome/clients-registrations/openid-connect client_name=my-app1 Authorization:' Bearer INITIAL_ACCESS_TOKEN_TO-BE-REPLACED'
 
-curl -k -X POST \
-    -d '{ "client_name": "jeg2-client" }' \
-    -H "Content-Type:application/json" \
-    -H "Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJjYThiMDBjZS05YzJlLTQ2MWUtOWVkNC0zNmRmZjkxMjUxZjYifQ.eyJleHAiOjE3OTA3ODI1NTQsImlhdCI6MTcwNDQ2ODk1NCwianRpIjoiYTI2NTk1NDQtZWFlZi00MTY3LTliZWMtYjg4NzcwZDlkZjRhIiwiaXNzIjoiaHR0cHM6Ly9zc28uYXBpbS5ldTo4NDQzL2F1dGgvcmVhbG1zL0plcm9tZSIsImF1ZCI6Imh0dHBzOi8vc3NvLmFwaW0uZXU6ODQ0My9hdXRoL3JlYWxtcy9KZXJvbWUiLCJ0eXAiOiJJbml0aWFsQWNjZXNzVG9rZW4ifQ.rsD3A0_RNKhQccA5dq6CCdI6N5_I5Fbzx9utNDzZYjM" \
-    https://sso.apim.eu:8443/auth/realms/Jerome/clients-registrations/openid-connect
-
-
-curl -k -X DELETE \
-    -H "Content-Type:application/json" \
-    -H "Authorization: bearer TO-BE-REPLACED" \
-    https://sso.apim.eu:8443/auth/realms/Jerome/clients-registrations/default/d3619ed3-6d5e-494a-98d4-221eebe73837
-
+# 2 - DELETE a CLIENT
 # Get Access token
 http -f -a kong-sa:JJDH69SR88ubsajvsCPABgwfXjwCI5pD POST https://sso.apim.eu:8443/auth/realms/Jerome/protocol/openid-connect/token grant_type=client_credentials
+# DELETE a CLIENT
+http  DELETE https://sso.apim.eu:8443/auth/realms/Jerome/clients-registrations/default/CLIENT_ID_TO-BE-REPLACED Authorization:' Bearer ACCESS_TOKEN_TO-BE-REPLACED'
 
-# Liste des clients
-http  https://sso.apim.eu:8443/auth/admin/realms/Jerome/clients Authorization:'Bearer TO-BE-REPLACED'
+# 3 - REFRESH the CLIENT_SECRET of a CLIENT
+# Get Access token
+See above
+# REFRESH the CLIENT_SECRET
+http -f POST https://sso.apim.eu:8443/auth/admin/realms/Jerome/clients/CLIENT_ID_TO-BE-REPLACED/client-secret Authorization:' Bearer ACCESS_TOKEN_TO-BE-REPLACED'
 
-# Suppression d'un client
-http  DELETE https://sso.apim.eu:8443/auth/realms/Jerome/clients-registrations/default/d3619ed3-6d5e-494a-98d4-221eebe73837 Authorization:'Bearer TO-BE-REPLACED'
+# X: 
+# list of 'client's
+http  https://sso.apim.eu:8443/auth/admin/realms/Jerome/clients Authorization:' Bearer ACCESS_TOKEN_TO-BE-REPLACED'
+# client Detail
+http  https://sso.apim.eu:8443/auth/admin/realms/Jerome/clients/CLIENT_ID_TO-BE-REPLACED Authorization:' Bearer ACCESS_TOKEN_TO-BE-REPLACED'
+# get secret of the 'client'
+https://sso.apim.eu:8443/auth/admin/realms/Jerome/clients/CLIENT_ID_TO-BE-REPLACED/client-secret Authorization:' Bearer ACCESS_TOKEN_TO-BE-REPLACED'
 
-#######################
-# Create a new CLIENT
+#############################################################
+# Test locally the DCR Bridge (which calls the Keycloak API)
+#############################################################
+# 0a - Get the 'x-api-key' from Konnect: Menu DevPortal / Settings / Application Setup, Select Idp=HTTP and click on Generate token (DCR)
+
+# 0b - Start locally the DCR Bridge
+yarn start
+
+
+# 1 - Create a new CLIENT
 http POST :3000/ redirect_uris=http://localhost \
     x-api-key:tB5915uprx3N \
     client_name=jegvscode1 \
@@ -38,6 +46,8 @@ http POST :3000/ redirect_uris=http://localhost \
     portal_id=02696642-6274-469d-b0d1-1bfdd1adbb40 \
     organization_id=1ac2a6d7-cc38-458d-8573-0f9868f8ac6c
 
-# DELETE a new CLIENT
- http DELETE :3000/d7c17995-889b-4230-a1af-a2acf9dd3f55 \
- x-api-key:tB5915uprx3N
+# 2 - DELETE a CLIENT
+http DELETE :3000/CLIENT_ID_TO-BE-REPLACED x-api-key:tB5915uprx3N
+
+# 3 - REFRESH a CLIENT_SECRET of a CLIENT
+http POST :3000/CLIENT_ID_TO-BE-REPLACED/new-secret x-api-key:tB5915uprx3N

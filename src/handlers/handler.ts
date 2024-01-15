@@ -22,6 +22,9 @@ export function DCRHandlers (fastify: FastifyInstance, _: RegisterOptions, next:
     }
   })
 
+  //---------------------------------------
+  // Create a new 'client' / 'Application'
+  //---------------------------------------
   fastify.route({
     url: '/',
     method: 'POST',
@@ -29,6 +32,9 @@ export function DCRHandlers (fastify: FastifyInstance, _: RegisterOptions, next:
       body: ApplicationPayloadSchema
     },
     handler: async function (request: FastifyRequest<{ Body: ApplicationPayload }>, reply: FastifyReply): Promise<FastifyReply> {
+      
+      // As the '/:application_id/new-secret' route changes the base URL, we have to force it on each call
+      fastify.httpClient.defaults.baseURL = fastify.config.KEYCLOAK_DOMAIN
       const grantTypes: string[] = []
       const responseTypes: string[] = []
       
@@ -70,15 +76,21 @@ export function DCRHandlers (fastify: FastifyInstance, _: RegisterOptions, next:
     }
   })
 
+  //-----------------------------------
+  // Delete a 'client' / 'Application'
+  //-----------------------------------
   fastify.route({
     url: '/:application_id',
     method: 'DELETE',
     handler: async function (request: FastifyRequest<{ Params: { application_id: string } }>, reply: FastifyReply): Promise<FastifyReply> {
       
+      // As the '/:application_id/new-secret' route changes the base URL, we have to force it on each call
+      fastify.httpClient.defaults.baseURL = fastify.config.KEYCLOAK_DOMAIN
+      
       var accessToken = await getAccessToken(fastify, fastify.config.KEYCLOAK_CLIENT_ID, fastify.config.KEYCLOAK_CLIENT_SECRET)
       var headers = getHeaders(accessToken)
       var url = `clients-registrations/default/${request.params.application_id}`
-      //console.log("Keycloak request, url='DELETE %s', headers=%j", url, headers)
+      console.log("Keycloak request, url='DELETE %s', headers=%j", url, headers)
       const response = await fastify.httpClient.delete(
         url,
         { headers }
@@ -88,20 +100,44 @@ export function DCRHandlers (fastify: FastifyInstance, _: RegisterOptions, next:
     }
   })
 
+  //-----------------------------------------------------------
+  // Refresh the 'client_secret' of a 'client' / 'Application'
+  //-----------------------------------------------------------
   fastify.route({
     url: '/:application_id/new-secret',
     method: 'POST',
     handler: async function (request: FastifyRequest<{ Params: { application_id: string } }>, reply: FastifyReply): Promise<FastifyReply> {
-      const headers = getHeaders(fastify.config.KEYCLOAK_API_TOKEN)
-      const response = await fastify.httpClient.post(
-        `oauth2/v1/clients/${request.params.application_id}/lifecycle/newSecret`,
+      // As this route changes the base URL, we have to force it on each call
+      fastify.httpClient.defaults.baseURL = fastify.config.KEYCLOAK_DOMAIN
+      
+      var accessToken = await getAccessToken(fastify, fastify.config.KEYCLOAK_CLIENT_ID, fastify.config.KEYCLOAK_CLIENT_SECRET)
+      var headers = getHeaders(accessToken)
+      var url = `clients/${request.params.application_id}/client-secret`
+      
+      // Change the baseURL to include the '/admin'
+      var baseURL = fastify.httpClient.defaults.baseURL
+      fastify.httpClient.defaults.baseURL = baseURL?.replace('/realms/', '/admin/realms/')
+      console.log("Keycloak request, url='POST %s', headers=%j", url, headers)
+      // Call the POST '/client-secret' which regenerates the secret
+      var response = await fastify.httpClient.post(
+        url,
         {},
         { headers }
       )
+      console.log("Keycloak response, code=%d, data=%j", response.status, response.data)
 
+      // Call the GET '/client-secret' which gets the secret
+      var url = `clients/${request.params.application_id}/client-secret`
+      console.log("Keycloak request, url='POST %s', headers=%j", url, headers)
+      response = await fastify.httpClient.get(
+        url,
+        { headers }
+      )
+      console.log("Keycloak response, code=%d, data=%j", response.status, response.data)
+      
       return reply.code(200).send({
         client_id: request.params.application_id,
-        client_secret: response.data.client_secret
+        client_secret: response.data.value
       })
     }
   })
@@ -113,6 +149,11 @@ export function DCRHandlers (fastify: FastifyInstance, _: RegisterOptions, next:
       body: EventHookSchema
     },
     handler: async function (request: FastifyRequest<{ Params: { application_id: string }, Body: { EventHook } }>, reply: FastifyReply): Promise<FastifyReply> {
+      // As the '/:application_id/new-secret' route changes the base URL, we have to force it on each call
+      fastify.httpClient.defaults.baseURL = fastify.config.KEYCLOAK_DOMAIN
+      
+      var url = `/${request.params.application_id}/event-hook`
+      console.log("Keycloak request, url='POST /%s', body=%j", url, request.body)
       return reply.code(200).send()
     }
   })
@@ -136,7 +177,6 @@ function getHeaders (token: string) {
 function getAuthBasicHeaders (client_id: string, client_secret: string) {
   
   var data = client_id + ':' + client_secret
-  
   var buff = Buffer.from(data)
   var base64data = buff.toString('base64')
   return {
