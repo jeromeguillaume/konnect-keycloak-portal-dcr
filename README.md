@@ -1,7 +1,7 @@
 # Konnect Portal DCR Handler for keycloak
-This repository is an implementation of an HTTP DCR bridge to enable [Dynamic Client Registration](https://docs.konghq.com/konnect/dev-portal/applications/dynamic-client-registration/) integration between the [Konnect Dev Portal](https://docs.konghq.com/konnect/dev-portal/) and Keycloak. The HTTP DCR bridge acts as a proxy and translation layer between your IDP and DCR applications made in the Konnect Dev Portal.
+This repository is an implementation of an HTTP DCR bridge to enable [Dynamic Client Registration](https://docs.konghq.com/konnect/dev-portal/applications/dynamic-client-registration/) integration between the [Konnect Dev Portal](https://docs.konghq.com/konnect/dev-portal/) and Keycloak. The HTTP DCR bridge acts as a proxy and translation layer between Keycloak and DCR applications made in the Konnect Dev Portal.
 
-This repository is forked from https://github.com/Kong/konnect-portal-dcr-handler. Please read the README.md.
+This repository is forked from https://github.com/Kong/konnect-portal-dcr-handler. Please read the [README.md](https://github.com/Kong/konnect-portal-dcr-handler?tab=readme-ov-file) of this repo.
 
 The HTTP DCR bridge is deployed as a serverless solution on AWS Lambda and it's based on a  lightweight [fastify](https://fastify.dev/) Node.js server.
 
