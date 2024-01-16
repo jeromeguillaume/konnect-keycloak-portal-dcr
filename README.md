@@ -156,20 +156,20 @@ http DELETE :3000/f54b9dc4-ee16-4a99-bfc9-4107ae73d6a4 x-api-key:<DCR_token-to-b
 ```sh
 HTTP/1.1 204 No Content
 ```
-Check on Keycloak the deleteion of this `client`
+Check on Keycloak the deletion of this `client`
 
 ## Deploy the DCR Handler to the Lambda Function
 - The Git Workflow [ci.yml](.github/workflows/ci.yml) pushes the DCR Handler code in the Lambda Function.
-- Connect to AWS cli
-```sh
-aws sso login
-```
 - Prepare and start a `self-hosted` Github Runner: open with the browser your Github repo and select Settings / Actions / Runners and click on `New self-hosted runner` 
 - Create Environment secrets: select Settings / Secrets and variables / Environment secrets with:
   - AWS_ROLE_NAME: 
   - BUCKET_NAME: `konnect-portal-dcr-keycloak`
   - FUNCTION_NAME: `konnect-portal-dcr-keycloak`
 ![Alt text](/images/5-Github-Environment-secrets.png?raw=true "GitHub - Environment secrets")
+- Connect to AWS cli (for the `self-hosted` runner)
+```sh
+aws sso login
+```
 - Do a Commit & Push of your repo, check in GitHub the green status of your CI workflow
 
 ## Test from Konnect Dev Portal the DCR Handler
