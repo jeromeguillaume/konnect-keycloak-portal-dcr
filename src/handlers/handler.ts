@@ -174,8 +174,10 @@ function getHeaders (token: string) {
   }
 }
 
+//-----------------------------------------------------------------------
+// Add the 'Authorization: Basic base64(client_id:client_secret)' header
+//-----------------------------------------------------------------------
 function getAuthBasicHeaders (client_id: string, client_secret: string) {
-  
   var data = client_id + ':' + client_secret
   var buff = Buffer.from(data)
   var base64data = buff.toString('base64')
@@ -186,6 +188,9 @@ function getAuthBasicHeaders (client_id: string, client_secret: string) {
   }
 }
 
+//-----------------------------------------------------------------------------
+// Request on Keycloak an Authorization Header for the client_id:client_secret
+//-----------------------------------------------------------------------------
 async function  getAccessToken (fastify: FastifyInstance, client_id: string, client_secret: string) {
   var headers = getAuthBasicHeaders (client_id, client_secret)
   var response = await fastify.httpClient.post( 
