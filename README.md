@@ -1,123 +1,220 @@
-[![][kong-logo-url]][kong-url]
+# Konnect Portal DCR Handler for keycloak
+This repository is an implementation of an HTTP DCR bridge to enable [Dynamic Client Registration](https://docs.konghq.com/konnect/dev-portal/applications/dynamic-client-registration/) integration between the [Konnect Dev Portal](https://docs.konghq.com/konnect/dev-portal/) and Keycloak. The HTTP DCR bridge acts as a proxy and translation layer between your IDP and DCR applications made in the Konnect Dev Portal.
 
-# Konnect Portal DCR Handler
+This repository is forked from https://github.com/Kong/konnect-portal-dcr-handler. Please read the README.md.
 
-This repository is an open source reference implementation of an HTTP DCR bridge to enable [Dynamic Client Registration][dcr-docs-url] integration between the [Konnect Dev Portal][portal-docs-url] and a third-party [Identity Provider][idp-wiki-url]. The HTTP DCR bridge acts as a proxy and translation layer between your IDP and DCR applications made in the Konnect Dev Portal.
+The HTTP DCR bridge is deployed as a serverless solution on AWS Lambda and it's based on a  lightweight [fastify](https://fastify.dev/) Node.js server.
 
-**NOTE: This repository contains an example HTTP DCR bridge implementation and is not meant to be deployed in production. We encourage you to use this application as a guide to create your own implementation.**
+## Prerequisites
+### Git clone
+Do a git clone of this repository
 
-This project is utilized within our integration tests, employing Okta as the IDP, and deployed as a serverless solution on AWS Lambda.
-This design ensures that the Developer Portal remains implementation-agnostic with respect to the IDP implementation.
+## Yarn
+Install Yarn [^1.22.x](https://classic.yarnpkg.com/lang/en/docs/install)
 
-## Implementation
 
-A lightweight [Fastify][fastify] HTTP Server implementing the [HTTP DCR API][openapi] is instantiated in `app.ts`.
-The handlers (declared in `handlers/handler.ts`):
+### Keycloak configuration
+1) Create an `Initial Access Token` for managing from Konnect the Application creation and **store the Initial AT**
+![Alt text](/images/1-keycloak-Client-Registration-Initial-AT.png?raw=true "Client Registration Initial Access Token")
 
-* Check that the calls received from Konnect are valid using the [schemas][schemas].
-* Verify (in `preHandler`) that the header `X-API-KEY` is present and is one of the API Key present in the env variable `KONG_API_TOKENS`, ensuring the call is legit.
-* Transform the payload and forward the call to the IDP.
-* If necessary, transform the response from the IDP to comply with the specification.
+2) Create a `client`, called for instance `kong-sa`, for managing from Konnect the application  deletion and the refresh token action. 
+The properties are:
+  - Client Protocol = `openid-connect`
+  - Access Type = `confidential`
+  - Service Accounts = `Enabled`
+  - OAuth 2.0 Device Authorization Grant = `Enabled`
+  - Valid Redirect URIs = `http//*` and `https://*`
+  
+  **Click on Save**
 
-### Environment configuration
+3) Open the `kong-sa` client, select `Service Account Roles` tab, select in `Client Roles` the `realm-management` and assign roles: 
+      - `create-client`, 
+      - `manage-clients`,
+      - `query-clients`, 
+      - `view-clients`
+![Alt text](/images/2-keycloak-kong-sa.png?raw=true "kong-sa - Client Service Account")
 
-The application requires specific environment variables to be set for proper functionality:
+### Lambda function (1)
+1) Create the Function
+  - Connect to the AWS Console
+  - Select the proper region (for instance `eu-central-1`)
+  - Create a Lambda function with:
+    - name =`konnect-portal-dcr-keycloak`
+    - runtime = `Node.js 20.x`
+    - Advanced settings / Enable function URL = `enabled`
 
-* **KONG_API_TOKENS**: is the comma-separated list of tokens used by Konnect to call the application. Konnect only supports one `DCR Token` at a time. However, if you'd like to rotate your token, we need to be able to check against multiple values to allow for rotation. To rotate your token:
-  * Generate and add a new token to KONG_API_TOKENS.
-  * Change the token in Konnect `Dev Portal > Settings > Application Setup > DCR Token`. Be sure to save your changes.
-  * Remove the older token from KONG_API_TOKENS.
-* **KEYCLOAK_DOMAIN**: is the base-url for calls to the external IDP. It's usually unique to your organization.
-* **OKTA_API_TOKEN**: is the API Token to authenticate calls to the external IDP. Various IDPs may use different auth methods.
+  **Click on Create function**
 
-## Getting started
+2) Open the Function
+  - Change `Code` / `Runtime settings`: handler = `lambda.handler`
+  - Change `Configuration`/`General configuration`: timeout = `10s`
+  - Open `Configuration`/`Environment variables` and Edit:
+    - KEYCLOAK_CLIENT_ID = `kong-sa`
+    - KEYCLOAK_CLIENT_SECRET = `<kong-sa-client_secret-to-be-replaced>`
+    - KEYCLOAK_CR_INITIAL_AT = `<initial_at-to-be-replaced>` (see step#1 - Keycloak configuration)
+    - KEYCLOAK_DOMAIN = `<keycloak-domain-to-be-replaced>` (example: https://sso.apim.eu:8443/auth/realms/Jerome/)
+    - KONG_API_TOKENS = `<DCR_token-to-be-replaced>` (see step#3 - Konnect Dev Portal configuration)
 
-### Prerequisites
+**Click on Save**
 
-* Kong Konnect account
-  * You can Start a Free trial at: [konghq.com][kong-konnect-register-url]
-  * Documentation for Kong Konnect is available at: [docs.konghq.com][konnect-docs-url]
-* Yarn [^1.22.x][yarn-install-url]
+See the Function URL (here: https://3w7r6pdhh6rgn7iia7sqotrdxm0hrspz.lambda-url.eu-west-3.on.aws/)
+![Alt text](/images/3-AWS-Lambda-function.png?raw=true "AWS Lambda - creation")
+
+### Konnect Dev Portal configuration
+1) Have a Kong Konnect account
+  - You can Start a Free trial at: [konghq.com](https://konghq.com/products/kong-konnect/register)
+2) Login to konnect
+3) Select Dev Portal / Settings / Application Setup menu and configure with:
+  - External identity provider for applications = `HTTP`
+  - Issuer = `<keycloak-domain-to-be-replaced>`
+  - HTTP Base URL = `<AWS_Function_url-to-be-replaced>`
+  - Scopes = `openid`
+  - Consumer claims = `clientId`
+  - Auth methods = check `Bearer Access Token` and `Client Credentials Grant`
+  - DCR Token = click on `Generate Token` and **store the DCR token**
+
+**Click on Save**
+![Alt text](/images/4-Konnect-Application-setup.png?raw=true "Konnect Dev Portal configuration")
+
+### Lambda function (2)
+1) Open the Function
+  - Open `Configuration`/`Environment variables` and Edit:
+    - KONG_API_TOKENS = `<DCR_token-to-be-replaced>` (see step#3 - Konnect Dev Portal configuration)
+
+**Click on Save**
+
+### S3 Bucket
+- Create a S3 bucket and call it, for instance, `konnect-portal-dcr-keycloak`
+- The purpose of this bucket is to store the source code of the DCR Handler and to push it in the AWS Lambda Function
+- **You don't need to upload** the `ambda-dcr-http.zip` manually: it will be done automatically by the CI workfow
+![Alt text](/images/4-AWS-S3-bucket.png?raw=true "AWS S3 bucket")
+
+## Test locally the DCR Handler
 
 Install dependencies
-
 ```sh
 yarn install --frozen-lockfile
 ```
 
-Run tests with
-
-```sh
-yarn test
-```
+Update the `.env` file as explained for Lambda Function
 
 Start local instance
-
 ```sh
 yarn start
 ```
 
-## Deployment
+The fastify server is started by default on port 3000
 
-This project is the lambda handler that the Konnect Portal project uses to execute synthetic tests for
-the HTTP DCR integration with Okta. It is automatically updated when merged to `main` branch,
-more information on the `ci` in [./github/workflows/ci.yml](./github/workflows/ci.yml).
-
-The current deployment uses an [AWS Lambda](https://docs.aws.amazon.com/lambda/) and can be accessed via
-the [Kong Lambda Plugin](https://docs.konghq.com/hub/kong-inc/aws-lambda/).
-
-## Join the Community
-
-* Join the Kong discussions at the Kong Nation forum: [https://discuss.konghq.com/](https://discuss.konghq.com/)
-* Follow us on Twitter: [https://twitter.com/thekonginc](https://twitter.com/thekonginc)
-* Check out the docs: [https://docs.konghq.com/](https://docs.konghq.com/)
-* Keep updated on YouTube by subscribing: [https://www.youtube.com/c/KongInc/videos](https://www.youtube.com/c/KongInc/videos)
-* Read up on the latest happenings at our blog: [https://konghq.com/blog/](https://konghq.com/blog/)
-* Visit our homepage to learn more: [https://konghq.com/](https://konghq.com/)
-
-## Contributing
-
-Please take the time to become familiar with our standards outlined below.
-First and foremost please and comply with the standards outlined in the [CODE_OF_CONDUCT](./CODE_OF_CONDUCT.md).
-
-### Branch naming conventions
-
-Please follow the following branch naming scheme when creating your branch:
-
-* `feat/foo-bar` for new features
-* `fix/foo-bar` for bug fixes
-* `test/foo-bar` when the change concerns only the test suite
-* `refactor/foo-bar` when refactoring code without any behavior change
-* `style/foo-bar` when addressing some style issue
-* `docs/foo-bar` for updates to the README.md, this file, or similar documents
-* `ci/foo-bar` for updates to the GitHub workflows or actions
-
-## License
-
-```txt
-Copyright 2016-2023 Kong Inc.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+1) Create a new Application
+- Request: `<DCR_token-to-be-replaced>`, `<portal_id-to-be-replaced>`, `<organization_id-to-be-replaced>` have to be replaced by their proper value. Go on Konnect / Dev Portal to get `portal_id` and `organization_id`
+```sh
+http POST :3000/ redirect_uris=http://localhost \
+    x-api-key:<DCR_token-to-be-replaced> \
+    client_name=jegvscode1 \
+    application_description=\
+    grant_types\[\]=authorization_code \
+    grant_types\[\]=refresh_token \
+    grant_types\[\]=implicit \
+    token_endpoint_auth_method=client_secret_jwt \
+    portal_id=<portal_id-to-be-replaced> \
+    organization_id=<organization_id-to-be-replaced>
 ```
+- Response:
+```sh
+HTTP/1.1 201 Created
+...
+{
+    "client_id": "f54b9dc4-ee16-4a99-bfc9-4107ae73d6a4",
+    "client_id_issued_at": 1705399806,
+    "client_secret": "istHTAPMMFLRDPT83dPfDCHOZH7cLV6V",
+    "client_secret_expires_at": 0
+}
+```
+Check on Kecyloak the creation of this new `client`
 
-[openapi]: ./openapi/openapi.yaml
-[fastify]: https://fastify.dev/
-[schemas]: ./src/schemas/
-[dcr-docs-url]: https://docs.konghq.com/konnect/dev-portal/applications/dynamic-client-registration/
-[portal-docs-url]: https://docs.konghq.com/konnect/dev-portal/
-[idp-wiki-url]: https://en.wikipedia.org/wiki/Identity_provider
-[konnect-docs-url]: https://docs.konghq.com/konnect/
-[kong-konnect-register-url]: https://konghq.com/products/kong-konnect/register
-[yarn-install-url]: https://classic.yarnpkg.com/lang/en/docs/install
-[kong-url]: https://konghq.com/
-[kong-logo-url]: https://konghq.com/wp-content/uploads/2018/05/kong-logo-github-readme.png
+2) Refresh a `client_secret` of an Application
+- Request:
+```sh
+http POST :3000/f54b9dc4-ee16-4a99-bfc9-4107ae73d6a4/new-secret x-api-key:tB5915uprx3N
+```
+- Response:
+```sh
+HTTP/1.1 200 OK
+...
+{
+    "client_id": "f54b9dc4-ee16-4a99-bfc9-4107ae73d6a4",
+    "client_secret": "JJrUI01URnL863GRyTIIsdFeTrkDVbMj"
+}
+```
+Check on Kecyloak the value of the new `client_secret`
+
+3) Delete an Application
+- Request:
+```sh
+http DELETE :3000/f54b9dc4-ee16-4a99-bfc9-4107ae73d6a4 x-api-key:tB5915uprx3N
+```
+- Response:
+```sh
+HTTP/1.1 204 No Content
+```
+Check on Kecyloak the deleteion of this `client`
+
+## Deploy the DCR Handler to the Lambda Function
+- The Git Workflow [ci.yml](.github/workflows/ci.yml) pushes the DCR Handler code in the Lambda Function.
+- Connect to AWS cli
+```sh
+aws sso login
+```
+- Prepare and start a `self-hosted` Github Runner: open with the browser your Github repo and select Settings / Actions / Runners and click on `New self-hosted runner` 
+- Create Environment secrets: select Settings / Secrets and variables / Environment secrets with:
+  - AWS_ROLE_NAME: 
+  - BUCKET_NAME: `konnect-portal-dcr-keycloak`
+  - FUNCTION_NAME: `konnect-portal-dcr-keycloak`
+![Alt text](/images/5-Github-Environment-secrets.png?raw=true "GitHub - Environment secrets")
+- Do a Commit & Push of your repo, check in GitHub the green status of your CI workflow
+
+## Test from Konnect Dev Portal the DCR Handler
+1) Login to Konnect Dev Portal
+2) Click on `My Apps` under your profile name
+3) Click on `New App`
+![Alt text](/images/6-Konnect-DevPortal-NewApp.png?raw=true "Konnect Dev Portal - New App")
+4) Click on `Create`
+![Alt text](/images/7-Konnect-DevPortal-NewApp.png?raw=true "Konnect Dev Portal - New client_id/client_secret")
+5) Go on Keycloak and check the new Client
+![Alt text](/images/8-Keycloak-NewClient.png?raw=true "Keycloak - New client")
+6) Go on Catalog, Select a Service and Register it to the new App
+7) Test access 
+- Request:
+```sh
+http -a 1d2d6ea6-b409-4583-a0f1-8413d8603359:pW1qkzutE6czuO78oTL2GRSkEq8HL05l :8000/myhttpbin/anything
+```
+- Response:
+```sh
+HTTP/1.1 200 OK
+...
+{
+    "args": {},
+    "data": "",
+    "files": {},
+    "form": {},
+    "headers": {
+        "Accept": "*/*",
+        "Authorization": "Bearer ABCDEF...."
+    },
+    "json": null,
+    "method": "GET",
+    "url": "https://localhost/anything"
+}
+```
+8) Test the Refresh secret
+- Select `My App`
+- Select `Refresh secret` menu
+![Alt text](/images/9-Konnect-Refresh-secret.png?raw=true "Konnect Dev Portal - Refresh secret")
+9) Go on Keycloak and check the new value of `client_secret` value`
+![Alt text](/images/10-Keycloak-Secret.png?raw=true "Keycloak - Refresh secret")
+10) Delete the App
+- Select `My App`
+- Select `Delete`
+![Alt text](/images/11-Konnect-DevPortal-DeleteApp.png?raw=true "Konnect Dev Portal - Delete App")
+11) Go on Keycloak and check that the client is no longer present
+![Alt text](/images/12-Keycloak-DeletedApp.png?raw=true "Keycloak - Deleted App")
