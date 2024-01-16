@@ -5,17 +5,17 @@
 # Get Realm Settings/Client Registration/Initial Access Tokens
 http POST https://sso.apim.eu:8443/auth/realms/Jerome/clients-registrations/openid-connect client_name=my-app1 Authorization:' Bearer INITIAL_ACCESS_TOKEN_TO-BE-REPLACED'
 
-# 2 - DELETE a CLIENT
-# Get Access token
-http -f -a kong-sa:JJDH69SR88ubsajvsCPABgwfXjwCI5pD POST https://sso.apim.eu:8443/auth/realms/Jerome/protocol/openid-connect/token grant_type=client_credentials
-# DELETE a CLIENT
-http  DELETE https://sso.apim.eu:8443/auth/realms/Jerome/clients-registrations/default/CLIENT_ID_TO-BE-REPLACED Authorization:' Bearer ACCESS_TOKEN_TO-BE-REPLACED'
-
-# 3 - REFRESH the CLIENT_SECRET of a CLIENT
+# 2 - REFRESH the CLIENT_SECRET of a CLIENT
 # Get Access token
 See above
 # REFRESH the CLIENT_SECRET
 http -f POST https://sso.apim.eu:8443/auth/admin/realms/Jerome/clients/CLIENT_ID_TO-BE-REPLACED/client-secret Authorization:' Bearer ACCESS_TOKEN_TO-BE-REPLACED'
+
+# 3 - DELETE a CLIENT
+# Get Access token
+http -f -a kong-sa:JJDH69SR88ubsajvsCPABgwfXjwCI5pD POST https://sso.apim.eu:8443/auth/realms/Jerome/protocol/openid-connect/token grant_type=client_credentials
+# DELETE a CLIENT
+http  DELETE https://sso.apim.eu:8443/auth/realms/Jerome/clients-registrations/default/CLIENT_ID_TO-BE-REPLACED Authorization:' Bearer ACCESS_TOKEN_TO-BE-REPLACED'
 
 # X: 
 # list of 'client's
@@ -46,8 +46,8 @@ http POST :3000/ redirect_uris=http://localhost \
     portal_id=02696642-6274-469d-b0d1-1bfdd1adbb40 \
     organization_id=1ac2a6d7-cc38-458d-8573-0f9868f8ac6c
 
-# 2 - DELETE a CLIENT
-http DELETE :3000/CLIENT_ID_TO-BE-REPLACED x-api-key:tB5915uprx3N
-
-# 3 - REFRESH a CLIENT_SECRET of a CLIENT
+# 2 - REFRESH a CLIENT_SECRET of a CLIENT
 http POST :3000/CLIENT_ID_TO-BE-REPLACED/new-secret x-api-key:tB5915uprx3N
+
+# 3 - DELETE a CLIENT
+http DELETE :3000/CLIENT_ID_TO-BE-REPLACED x-api-key:tB5915uprx3N

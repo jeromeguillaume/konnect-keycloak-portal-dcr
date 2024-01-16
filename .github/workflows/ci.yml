@@ -13,7 +13,7 @@ env:
   FUNCTION_NAME: ${{ secrets.FUNCTION_NAME }}
 
 jobs:
-  test:
+  deployment:
     # runs-on: ubuntu-latest
     runs-on: self-hosted
     # environment and permissions are required when using the role-to-assume
