@@ -9,7 +9,7 @@ The HTTP DCR bridge is deployed as a serverless solution on AWS Lambda and it's 
 ### Git clone
 Do a git clone of this repository
 
-## Yarn
+### Yarn
 Install Yarn [^1.22.x](https://classic.yarnpkg.com/lang/en/docs/install)
 
 
