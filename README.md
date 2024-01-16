@@ -216,4 +216,4 @@ HTTP/1.1 200 OK
 - Select `Delete`
 ![Alt text](/images/11-Konnect-DevPortal-DeleteApp.png?raw=true "Konnect Dev Portal - Delete App")
 11) Go on Keycloak and check that the client is no longer present
-![Alt text](/images/12-Keycloak-DeletedApp.png?raw=true "Keycloak - Deleted App")
+![Alt text](/images/12-Keycloak-AppDeleted.png?raw=true "Keycloak - Deleted App")
