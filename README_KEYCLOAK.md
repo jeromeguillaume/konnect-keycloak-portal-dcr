@@ -17,6 +17,6 @@ Edit runtime settings
 Configuration
   Timeout change 3s to 1 min
   Environment Variable:
-    KEYCLOAK_API_TOKEN
+    KEYCLOAK_CR_INITIAL_AT
     KEYCLOAK_DOMAIN
     KONG_API_TOKENS

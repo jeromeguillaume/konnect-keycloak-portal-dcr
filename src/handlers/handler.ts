@@ -57,7 +57,7 @@ export function DCRHandlers (fastify: FastifyInstance, _: RegisterOptions, next:
       }
 
       
-      const headers = getHeaders(fastify.config.KEYCLOAK_API_TOKEN)
+      const headers = getHeaders(fastify.config.KEYCLOAK_CR_INITIAL_AT)
       var url='clients-registrations/openid-connect'
       console.log("Keycloak request, url='POST /%s', headers=%j, body=%j", url, headers, payloadKeycloak)
       const response = await fastify.httpClient.post(

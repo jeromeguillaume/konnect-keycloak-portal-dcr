@@ -28,13 +28,6 @@ jobs:
     - uses: actions/setup-node@v4
       with:
         node-version-file: '.nvmrc'
-    - name: Set up secret file
-      env:
-        DEBUG_BUCKET: ${{ env.BUCKET_NAME }}
-        FUNCTION_NAME: ${{ secrets.FUNCTION_NAME }}
-      run: |
-        echo BUCKET=$DEBUG_BUCKET >> secrets.txt
-        echo FUNCTION=$FUNCTION_NAME >> secrets.txt
     - name: Configure AWS credentials
     #  if: github.ref == 'refs/heads/main'
     #  uses: aws-actions/configure-aws-credentials@v3.0.1
@@ -44,6 +37,11 @@ jobs:
     #    role-session-name: HttpDcrLambdaCiUsEast2
     #    role-duration-seconds: 1200
     #    mask-aws-account-id: 'true'
+    # 
+
+    # ****           **** 
+    # **** IMPORTANT **** with a 'self-hosted' runner you have to do => 'aws sso login'
+    # ****           **** 
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: eu-west-3
