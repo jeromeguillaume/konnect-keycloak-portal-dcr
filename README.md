@@ -14,10 +14,10 @@ Install Yarn [^1.22.x](https://classic.yarnpkg.com/lang/en/docs/install)
 
 
 ### Keycloak configuration
-1) Create an `Initial Access Token` for managing from Konnect the Application creation and **store the Initial AT**
+1) Create an `Initial Access Token` for managing (from Konnect Dev Portal) the Application creation and **store the Initial AT**
 ![Alt text](/images/1-keycloak-Client-Registration-Initial-AT.png?raw=true "Client Registration Initial Access Token")
 
-2) Create a `client`, called for instance `kong-sa`, for managing from Konnect the application  deletion and the refresh token action. 
+2) Create a `client`, called it for instance `kong-sa`, for managing (from Konnect Dev Portal) the application  deletion and the refresh token action. 
 The properties are:
   - Client Protocol = `openid-connect`
   - Access Type = `confidential`
@@ -83,7 +83,7 @@ See the Function URL (here: https://3w7r6pdhh6rgn7iia7sqotrdxm0hrspz.lambda-url.
 **Click on Save**
 
 ### S3 Bucket
-- Create a S3 bucket and call it, for instance, `konnect-portal-dcr-keycloak`
+- Create a S3 bucket and call it for instance `konnect-portal-dcr-keycloak`
 - The purpose of this bucket is to store the source code of the DCR Handler and to push it in the AWS Lambda Function
 - **You don't need to upload** the `ambda-dcr-http.zip` manually: it will be done automatically by the CI workfow
 ![Alt text](/images/4-AWS-S3-bucket.png?raw=true "AWS S3 bucket")
