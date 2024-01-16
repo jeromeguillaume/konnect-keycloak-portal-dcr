@@ -129,12 +129,12 @@ HTTP/1.1 201 Created
     "client_secret_expires_at": 0
 }
 ```
-Check on Kecyloak the creation of this new `client`
+Check on Keycloak the creation of this new `client`
 
 2) Refresh a `client_secret` of an Application
 - Request:
 ```sh
-http POST :3000/f54b9dc4-ee16-4a99-bfc9-4107ae73d6a4/new-secret x-api-key:tB5915uprx3N
+http POST :3000/f54b9dc4-ee16-4a99-bfc9-4107ae73d6a4/new-secret x-api-key:<DCR_token-to-be-replaced>
 ```
 - Response:
 ```sh
@@ -145,18 +145,18 @@ HTTP/1.1 200 OK
     "client_secret": "JJrUI01URnL863GRyTIIsdFeTrkDVbMj"
 }
 ```
-Check on Kecyloak the value of the new `client_secret`
+Check on Keycloak the value of the new `client_secret`
 
 3) Delete an Application
 - Request:
 ```sh
-http DELETE :3000/f54b9dc4-ee16-4a99-bfc9-4107ae73d6a4 x-api-key:tB5915uprx3N
+http DELETE :3000/f54b9dc4-ee16-4a99-bfc9-4107ae73d6a4 x-api-key:<DCR_token-to-be-replaced>
 ```
 - Response:
 ```sh
 HTTP/1.1 204 No Content
 ```
-Check on Kecyloak the deleteion of this `client`
+Check on Keycloak the deleteion of this `client`
 
 ## Deploy the DCR Handler to the Lambda Function
 - The Git Workflow [ci.yml](.github/workflows/ci.yml) pushes the DCR Handler code in the Lambda Function.
