@@ -34,7 +34,7 @@ The properties are:
       - `view-clients`
 ![Alt text](/images/2-keycloak-kong-sa.png?raw=true "kong-sa - Client Service Account")
 
-### Lambda function (1)
+### Lambda function (first steps)
 1) Create the Function
   - Connect to the AWS Console
   - Select the proper region (for instance `eu-central-1`)
@@ -53,7 +53,6 @@ The properties are:
     - KEYCLOAK_CLIENT_SECRET = `<kong-sa-client_secret-to-be-replaced>`
     - KEYCLOAK_CR_INITIAL_AT = `<initial_at-to-be-replaced>` (see step#1 - Keycloak configuration)
     - KEYCLOAK_DOMAIN = `<keycloak-domain-to-be-replaced>` (example: https://sso.apim.eu:8443/auth/realms/Jerome/)
-    - KONG_API_TOKENS = `<DCR_token-to-be-replaced>` (see step#3 - Konnect Dev Portal configuration)
 
 **Click on Save**
 
@@ -76,7 +75,7 @@ See the Function URL (here: https://3w7r6pdhh6rgn7iia7sqotrdxm0hrspz.lambda-url.
 **Click on Save**
 ![Alt text](/images/4-Konnect-Application-setup.png?raw=true "Konnect Dev Portal configuration")
 
-### Lambda function (2)
+### Lambda function (last step)
 1) Open the Function
   - Open `Configuration`/`Environment variables` and Edit:
     - KONG_API_TOKENS = `<DCR_token-to-be-replaced>` (see step#3 - Konnect Dev Portal configuration)
