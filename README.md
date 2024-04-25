@@ -60,11 +60,27 @@ The properties are:
 See the Bridge Function URL (here: https://3w7r6pdhh6rgn7iia7sqotrdxm0hrspz.lambda-url.eu-west-3.on.aws/)
 ![Alt text](/images/3-AWS-Lambda-function.png?raw=true "AWS Lambda - creation")
 
-### Konnect Dev Portal configuration
+### Konnect Gateway Service configuration
 1) Have a Kong Konnect account
   - You can Start a Free trial at: [konghq.com](https://konghq.com/products/kong-konnect/register)
 2) Login to konnect
-3) Select Dev Portal / Application Auth menu, select DCR Providers tab, click on `+ New DCR Provider` and configure with:
+3) Select Gateway Manager menu and open your `Gateway Manager`
+4) Create a new `httpbin` Gateway Service with:
+  - Name = `httpbin`
+  - Upstream URL = `http://httpbin.apim.eu`
+
+**Click on Save**
+
+5) Create a new `httpbin` Route to the Gateway Service with:
+  - Name = `httpbin`
+  - Path = `/httpbin`
+
+**Click on Save**
+
+
+### Konnect Dev Portal configuration
+1) Login to konnect
+2) Select Dev Portal / Application Auth menu, select DCR Providers tab, click on `+ New DCR Provider` and configure with:
   - Name = `DCR Keycloak`
   - Issuer URL = `<keycloak-domain-to-be-replaced>`
   - Provider Type = `HTTP`
@@ -74,7 +90,7 @@ See the Bridge Function URL (here: https://3w7r6pdhh6rgn7iia7sqotrdxm0hrspz.lamb
 **Click on Save**
 ![Alt text](/images/4a-Konnect-New-DCR-Provider.png?raw=true "Konnect Dev Portal configuration - New DCR Provider")
 
-4) Select Dev Portal / Application Auth menu, click on `+ New Auth Strategy` and configure with:
+3) Select Dev Portal / Application Auth menu, click on `+ New Auth Strategy` and configure with:
   - Name = `Auth DCR Keycloak`
   - Display Name = `Auth DCR Keycloak`
   - Auth Type = `DCR`
@@ -88,7 +104,7 @@ See the Bridge Function URL (here: https://3w7r6pdhh6rgn7iia7sqotrdxm0hrspz.lamb
 ![Alt text](/images/4b-Konnect-New-Auth.png?raw=true "Konnect Dev Portal configuration - New Auth Strategy")
 
 4) Select API Products menu, click on `+ API Product` and configure with:
-  - Product Name = `Test`
+  - Product Name = `Httpbin`
 
 **Click on Save**
 ![Alt text](/images/4c-Konnect-New-API-Product.png?raw=true "Konnect Dev Portal configuration - New API Product")
@@ -97,11 +113,17 @@ See the Bridge Function URL (here: https://3w7r6pdhh6rgn7iia7sqotrdxm0hrspz.lamb
 
 **Click on Save**
 
-6) Update the `unpublished` Status to `published` and check `Publish API Product`
+6) Link with a Gateway Service by cicking on `+ Link`:
+  - Select Control Plane = `Your Control Plane` stands for `Gateway Manager`
+  - Gateway Service = `httpbin`
 
 **Click on Save**
 
-7) Update the `disabled` App Registration to `enabled` with:
+7) Update the `unpublished` Status to `published` and check `Publish API Product`
+
+**Click on Save**
+
+8) Update the `disabled` App Registration to `enabled` with:
   - Auth Strategy = `Auth DCR Keycloak`
   - App Registration Enabled
   
