@@ -68,7 +68,7 @@ if (require.main === module) {
   (async () => {
     try {
       const app = await init()
-      await app.listen({ port: 3000 })
+      await app.listen({ port: 3000, host: '::' })
       app.log.info('Server started')
     } catch (error) {
       console.error('Error starting the application:', error)

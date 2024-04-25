@@ -19,3 +19,5 @@ yarn-error.log*
 #!.yarn/cache
 .pnp.*
 dist
+.gitignore
+start-bridge-docker.sh

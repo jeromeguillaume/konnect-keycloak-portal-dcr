@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: konnect-portal-dcr-keycloak
+  name: konnect-portal-dcr-keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: konnect-portal-dcr-keycloak
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: konnect-portal-dcr-keycloak
+    spec:
+      containers:
+      - image: jeromeguillaume/konnect-keycloak-portal-dcr:1.1
+        name: konnect-keycloak-portal-dcr
+        env:
+        - name: KEYCLOAK_CR_INITIAL_AT
+          value: eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJjYThiMDBjZS05YzJlLTQ2MWUtOWVkNC0zNmRmZjkxMjUxZjYifQ.eyJleHAiOjE3OTEwNDU1NzYsImlhdCI6MTcwNDczMTk3NiwianRpIjoiMTI0NzNmZDItZTUxOS00NTIxLWFkOGEtODBjNTEzNGYwMjc0IiwiaXNzIjoiaHR0cHM6Ly9zc28uYXBpbS5ldTo4NDQzL2F1dGgvcmVhbG1zL0plcm9tZSIsImF1ZCI6Imh0dHBzOi8vc3NvLmFwaW0uZXU6ODQ0My9hdXRoL3JlYWxtcy9KZXJvbWUiLCJ0eXAiOiJJbml0aWFsQWNjZXNzVG9rZW4ifQ.ondBV0vrOniFWBb5CTg1SQHdIVhLfMgGmY9xa5gyQG8
+        - name: KEYCLOAK_CLIENT_ID
+          value: kong-sa
+        - name: KEYCLOAK_CLIENT_SECRET
+          value: JJDH69SR88ubsajvsCPABgwfXjwCI5pD
+        - name: KEYCLOAK_DOMAIN
+          value: https://sso.apim.eu:8443/auth/realms/Jerome/
+        - name: KONG_API_TOKENS
+          value: tB5915uprx3N
+        ports:
+        - containerPort: 3000
+        resources: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: konnect-portal-dcr-keycloak
+  name: svc-konnect-portal-dcr-keycloak
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app: konnect-portal-dcr-keycloak
+  type: LoadBalancer

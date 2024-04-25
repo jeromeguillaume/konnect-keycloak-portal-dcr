@@ -3,15 +3,23 @@ This repository is an implementation of an HTTP DCR bridge to enable [Dynamic Cl
 
 This repository is forked from https://github.com/Kong/konnect-portal-dcr-handler. Please read the [README.md](https://github.com/Kong/konnect-portal-dcr-handler?tab=readme-ov-file) of this repo.
 
-The HTTP DCR bridge is deployed as a serverless solution on AWS Lambda and it's based on a  lightweight [fastify](https://fastify.dev/) Node.js server.
+The HTTP DCR bridge is deployed as a serverless solution on AWS Lambda or as a Docker container and it's based on a  lightweight [fastify](https://fastify.dev/) Node.js server.
 
 ## Prerequisites
 ### Git clone
 Do a git clone of this repository
+```sh
+git clone https://github.com/jeromeguillaume/konnect-keycloak-portal-dcr.git
+```
 
 ### Yarn
 Install Yarn [^1.22.x](https://classic.yarnpkg.com/lang/en/docs/install)
 
+### Docker
+If you want to build a Docker image (for the HTTP DCR bridge) enabling a Kubernetes/OpenShift deployment, install [Docker](https://docs.docker.com/engine/install/)
+
+### Httpie
+Install [Httpie](https://httpie.io/cli)
 
 ### Keycloak configuration
 1) Create an `Initial Access Token` for managing (from Konnect Dev Portal) the Application creation and **store the Initial AT**
@@ -34,7 +42,14 @@ The properties are:
       - `view-clients`
 ![Alt text](/images/2-keycloak-kong-sa.png?raw=true "kong-sa - Client Service Account")
 
-### Lambda function
+## Build the HTTP DCR bridge
+
+2 options are available for the HTTP DCR bridge building:
+  - AWS Lambda Function
+  - Docker image (for Kubernetes/OpenShift)
+
+Select the best option in regards your technical environment
+### AWS Lambda Function
 1) Create the Function
   - Connect to the AWS Console
   - Select the proper region (for instance `eu-central-1`)
@@ -60,10 +75,23 @@ The properties are:
 See the Bridge Function URL (here: https://3w7r6pdhh6rgn7iia7sqotrdxm0hrspz.lambda-url.eu-west-3.on.aws/)
 ![Alt text](/images/3-AWS-Lambda-function.png?raw=true "AWS Lambda - creation")
 
-### Konnect Gateway Service configuration
+### AWS S3 Bucket
+- Create a S3 bucket and call it for instance `konnect-portal-dcr-keycloak`
+- The purpose of this bucket is to store the source code of the DCR Handler and to push it in the AWS Lambda Function
+- **You don't need to upload** the `ambda-dcr-http.zip` manually: it will be done automatically by the CI workfow
+![Alt text](/images/4-AWS-S3-bucket.png?raw=true "AWS S3 bucket")
+
+### Docker image
+1) Build and Push the Docker image for linux/arm64 and linux/amd64
+```
+cd konnect-keycloak-portal-dcr
+docker buildx create --use --platform=linux/amd64,linux/arm64 --name multi-platform-builder
+docker buildx build --push --platform linux/amd64,linux/arm64 --tag jeromeguillaume/konnect-keycloak-portal-dcr:1.1 .
+```
+## Konnect Gateway Service configuration
 1) Have a Kong Konnect account
   - You can Start a Free trial at: [konghq.com](https://konghq.com/products/kong-konnect/register)
-2) Login to konnect
+2) Login to [konnect](https://cloud.konghq.com)
 3) Select Gateway Manager menu and open your `Gateway Manager`
 4) Create a new `httpbin` Gateway Service with:
   - Name = `httpbin`
@@ -78,14 +106,14 @@ See the Bridge Function URL (here: https://3w7r6pdhh6rgn7iia7sqotrdxm0hrspz.lamb
 **Click on Save**
 
 
-### Konnect Dev Portal configuration
-1) Login to konnect
+## Konnect Dev Portal configuration
+1) Login to [konnect](https://cloud.konghq.com)
 2) Select Dev Portal / Application Auth menu, select DCR Providers tab, click on `+ New DCR Provider` and configure with:
   - Name = `DCR Keycloak`
   - Issuer URL = `<keycloak-domain-to-be-replaced>`
   - Provider Type = `HTTP`
   - DCR Base URL = `<Bridge_Function_url-to-be-replaced>`
-  - API Key = `<your_Konnect_API_Key_value>` Put the same vlue defined above
+  - API Key = `<your_Konnect_API_Key_value>` Put the same value defined above
   
 **Click on Save**
 ![Alt text](/images/4a-Konnect-New-DCR-Provider.png?raw=true "Konnect Dev Portal configuration - New DCR Provider")
@@ -130,33 +158,52 @@ See the Bridge Function URL (here: https://3w7r6pdhh6rgn7iia7sqotrdxm0hrspz.lamb
 **Click on Save**
 ![Alt text](/images/4d-Konnect-App-Registration.png?raw=true "Konnect Dev Portal configuration - Edit App Registration")
 
-### S3 Bucket
-- Create a S3 bucket and call it for instance `konnect-portal-dcr-keycloak`
-- The purpose of this bucket is to store the source code of the DCR Handler and to push it in the AWS Lambda Function
-- **You don't need to upload** the `ambda-dcr-http.zip` manually: it will be done automatically by the CI workfow
-![Alt text](/images/4-AWS-S3-bucket.png?raw=true "AWS S3 bucket")
+## Test locally the HTTP DCR Bridge
+2 options are available to run locally HTTP DCR Bridge:
+  - On the computer OS
+  - On Docker
 
-## Test locally the DCR Handler
+The fastify server is started by default on port 3000 for both deployments
 
+1) Start HTTP DCR Bridge on the computer OS
 Install dependencies
 ```sh
 yarn install --frozen-lockfile
 ```
 
-Update the `.env` file as explained for Lambda Function
+Create an `.env` file at the root of this project, get the following content and **replace the strings enclosed by < >**:
+```sh
+KEYCLOAK_CR_INITIAL_AT=<initial_at-to-be-replaced>
+KEYCLOAK_CLIENT_ID=kong-sa
+KEYCLOAK_CLIENT_SECRET=<kong-sa-client_secret-to-be-replaced>
+# example: https://sso.apim.eu:8443/auth/realms/Jerome/
+KEYCLOAK_DOMAIN=<keycloak-domain-to-be-replaced>
+KONG_API_TOKENS=<your_Konnect_API_Key_value>
+```
 
 Start local instance
 ```sh
 yarn start
 ```
 
-The fastify server is started by default on port 3000
+**OR**
+1) Start HTTP DCR Bridge on Docker
+```sh
+docker run -p 3000:3000 \
+--name konnect-keycloak-portal-dcr \
+-e KEYCLOAK_CR_INITIAL_AT=<initial_at-to-be-replaced> \
+-e KEYCLOAK_CLIENT_ID=kong-sa \
+-e KEYCLOAK_CLIENT_SECRET=<kong-sa-client_secret-to-be-replaced> \
+-e KEYCLOAK_DOMAIN=<keycloak-domain-to-be-replaced> \
+-e KONG_API_TOKENS=<your_Konnect_API_Key_value> \
+jeromeguillaume/konnect-keycloak-portal-dcr:1.0
+```
 
-1) Create a new Application
-- Request: `<your_Konnect_API_Key_value>`, `<portal_id-to-be-replaced>`, `<organization_id-to-be-replaced>` have to be replaced by their proper value. Go on Konnect / Dev Portal to get `portal_id` and `organization_id`
+2) Create a new Application
+- Request: `<DCR_token-to-be-replaced>`, `<portal_id-to-be-replaced>`, `<organization_id-to-be-replaced>` have to be replaced by their proper value. Go on Konnect / Dev Portal to get `portal_id` and `organization_id`
 ```sh
 http POST :3000/ redirect_uris=http://localhost \
-    x-api-key:<your_Konnect_API_Key_value> \
+    x-api-key:<DCR_token-to-be-replaced> \
     client_name=jegvscode1 \
     application_description=\
     grant_types\[\]=authorization_code \
@@ -179,10 +226,10 @@ HTTP/1.1 201 Created
 ```
 Check on Keycloak the creation of this new `client`
 
-2) Refresh a `client_secret` of an Application
+3) Refresh a `client_secret` of an Application
 - Request:
 ```sh
-http POST :3000/f54b9dc4-ee16-4a99-bfc9-4107ae73d6a4/new-secret x-api-key:<your_Konnect_API_Key_value>
+http POST :3000/f54b9dc4-ee16-4a99-bfc9-4107ae73d6a4/new-secret x-api-key:<DCR_token-to-be-replaced>
 ```
 - Response:
 ```sh
@@ -195,10 +242,10 @@ HTTP/1.1 200 OK
 ```
 Check on Keycloak the value of the new `client_secret`
 
-3) Delete an Application
+4) Delete an Application
 - Request:
 ```sh
-http DELETE :3000/f54b9dc4-ee16-4a99-bfc9-4107ae73d6a4 x-api-key:<your_Konnect_API_Key_value>
+http DELETE :3000/f54b9dc4-ee16-4a99-bfc9-4107ae73d6a4 x-api-key:<DCR_token-to-be-replaced>
 ```
 - Response:
 ```sh
@@ -206,7 +253,9 @@ HTTP/1.1 204 No Content
 ```
 Check on Keycloak the deletion of this `client`
 
-## Deploy the DCR Handler to the Lambda Function
+## Deploy the HTTP DCR Bridge
+
+### Deploy the bridge in an AWS Lambda Function
 - The Git Workflow [ci.yml](.github/workflows/ci.yml) pushes the DCR Handler code in the Lambda Function.
 - Prepare and start a `self-hosted` Github Runner: open with the browser your Github repo and select Settings / Actions / Runners and click on `New self-hosted runner` 
 - Create Environment secrets: select Settings / Secrets and variables / Environment secrets with:
@@ -220,7 +269,9 @@ aws sso login
 ```
 - Do a Commit & Push of your repo, check in GitHub the green status of your CI workflow
 
-## Test from Konnect Dev Portal the DCR Handler
+### Deploy the Bridge in Kubernetes / OpenShift with the Docker image
+
+## Test the Bridge from Konnect Dev Portal
 1) Login to Konnect Dev Portal
 2) Click on `My Apps` under your profile name
 3) Click on `New App`
