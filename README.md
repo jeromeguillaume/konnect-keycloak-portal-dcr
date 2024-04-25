@@ -88,77 +88,10 @@ cd konnect-keycloak-portal-dcr
 docker buildx create --use --platform=linux/amd64,linux/arm64 --name multi-platform-builder
 docker buildx build --push --platform linux/amd64,linux/arm64 --tag jeromeguillaume/konnect-keycloak-portal-dcr:1.1 .
 ```
-## Konnect Gateway Service configuration
-1) Have a Kong Konnect account
-  - You can Start a Free trial at: [konghq.com](https://konghq.com/products/kong-konnect/register)
-2) Login to [konnect](https://cloud.konghq.com)
-3) Select Gateway Manager menu and open your `Gateway Manager`
-4) Create a new `httpbin` Gateway Service with:
-  - Name = `httpbin`
-  - Upstream URL = `http://httpbin.apim.eu`
 
-**Click on Save**
+## Optional: test locally the HTTP DCR Bridge
+if you don't want ot test locally the Bridge you can skip this section and go to [Deploy the HTTP DCR Bridge](#deploy-the-http-dcr-bridge)
 
-5) Create a new `httpbin` Route to the Gateway Service with:
-  - Name = `httpbin`
-  - Path = `/httpbin`
-
-**Click on Save**
-
-
-## Konnect Dev Portal configuration
-1) Login to [konnect](https://cloud.konghq.com)
-2) Select Dev Portal / Application Auth menu, select DCR Providers tab, click on `+ New DCR Provider` and configure with:
-  - Name = `DCR Keycloak`
-  - Issuer URL = `<keycloak-domain-to-be-replaced>`
-  - Provider Type = `HTTP`
-  - DCR Base URL = `<Bridge_Function_url-to-be-replaced>`
-  - API Key = `<your_Konnect_API_Key_value>` Put the same value defined above
-  
-**Click on Save**
-![Alt text](/images/4a-Konnect-New-DCR-Provider.png?raw=true "Konnect Dev Portal configuration - New DCR Provider")
-
-3) Select Dev Portal / Application Auth menu, click on `+ New Auth Strategy` and configure with:
-  - Name = `Auth DCR Keycloak`
-  - Display Name = `Auth DCR Keycloak`
-  - Auth Type = `DCR`
-  - DCR Provider = `DCR Keycloak`
-  - Scopes = `openid`
-  - Credential Claims = `clientId`
-  - Auth Method = `bearer` and `client_credentials`
-    
-**Click on Save**
-
-![Alt text](/images/4b-Konnect-New-Auth.png?raw=true "Konnect Dev Portal configuration - New Auth Strategy")
-
-4) Select API Products menu, click on `+ API Product` and configure with:
-  - Product Name = `Httpbin`
-
-**Click on Save**
-![Alt text](/images/4c-Konnect-New-API-Product.png?raw=true "Konnect Dev Portal configuration - New API Product")
-5) Select Product Versions menu, click on `+ New Version` and configure with:
-  - Product Version Name = `v1`
-
-**Click on Save**
-
-6) Link with a Gateway Service by cicking on `+ Link`:
-  - Select Control Plane = `Your Control Plane` stands for `Gateway Manager`
-  - Gateway Service = `httpbin`
-
-**Click on Save**
-
-7) Update the `unpublished` Status to `published` and check `Publish API Product`
-
-**Click on Save**
-
-8) Update the `disabled` App Registration to `enabled` with:
-  - Auth Strategy = `Auth DCR Keycloak`
-  - App Registration Enabled
-  
-**Click on Save**
-![Alt text](/images/4d-Konnect-App-Registration.png?raw=true "Konnect Dev Portal configuration - Edit App Registration")
-
-## Test locally the HTTP DCR Bridge
 2 options are available to run locally HTTP DCR Bridge:
   - On the computer OS
   - On Docker
@@ -290,10 +223,84 @@ kubectl create -f kubernetes/konnect-keycloak-portal-dcr.yaml
 
 The results should look like this:
 ```
-
+deployment.apps/konnect-portal-dcr-keycloak created
+service/svc-konnect-portal-dcr-keycloak created
 ```
 
-export PROXY_IP=$(kubectl get svc kong-gateway-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+4) Get tle URL of Bridge
+```sh
+kubectl get svc svc-konnect-portal-dcr-keycloak -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
+```
+
+## Konnect Gateway Service configuration
+1) Have a Kong Konnect account
+  - You can Start a Free trial at: [konghq.com](https://konghq.com/products/kong-konnect/register)
+2) Login to [konnect](https://cloud.konghq.com)
+3) Select Gateway Manager menu and open your `Gateway Manager`
+4) Create a new `httpbin` Gateway Service with:
+  - Name = `httpbin`
+  - Upstream URL = `http://httpbin.apim.eu`
+
+**Click on Save**
+
+5) Create a new `httpbin` Route to the Gateway Service with:
+  - Name = `httpbin`
+  - Path = `/httpbin`
+
+**Click on Save**
+
+
+## Konnect Dev Portal configuration
+1) Login to [konnect](https://cloud.konghq.com)
+2) Select Dev Portal / Application Auth menu, select DCR Providers tab, click on `+ New DCR Provider` and configure with:
+  - Name = `DCR Keycloak`
+  - Issuer URL = `<keycloak-domain-to-be-replaced>`
+  - Provider Type = `HTTP`
+  - DCR Base URL = `<Bridge_Function_url-to-be-replaced>`
+  - API Key = `<your_Konnect_API_Key_value>` Put the same value defined above
+  
+**Click on Save**
+![Alt text](/images/4a-Konnect-New-DCR-Provider.png?raw=true "Konnect Dev Portal configuration - New DCR Provider")
+
+3) Select Dev Portal / Application Auth menu, click on `+ New Auth Strategy` and configure with:
+  - Name = `Auth DCR Keycloak`
+  - Display Name = `Auth DCR Keycloak`
+  - Auth Type = `DCR`
+  - DCR Provider = `DCR Keycloak`
+  - Scopes = `openid`
+  - Credential Claims = `clientId`
+  - Auth Method = `bearer` and `client_credentials`
+    
+**Click on Save**
+
+![Alt text](/images/4b-Konnect-New-Auth.png?raw=true "Konnect Dev Portal configuration - New Auth Strategy")
+
+4) Select API Products menu, click on `+ API Product` and configure with:
+  - Product Name = `Httpbin`
+
+**Click on Save**
+![Alt text](/images/4c-Konnect-New-API-Product.png?raw=true "Konnect Dev Portal configuration - New API Product")
+5) Select Product Versions menu, click on `+ New Version` and configure with:
+  - Product Version Name = `v1`
+
+**Click on Save**
+
+6) Link with a Gateway Service by cicking on `+ Link`:
+  - Select Control Plane = `Your Control Plane` stands for `Gateway Manager`
+  - Gateway Service = `httpbin`
+
+**Click on Save**
+
+7) Update the `unpublished` Status to `published` and check `Publish API Product`
+
+**Click on Save**
+
+8) Update the `disabled` App Registration to `enabled` with:
+  - Auth Strategy = `Auth DCR Keycloak`
+  - App Registration Enabled
+  
+**Click on Save**
+![Alt text](/images/4d-Konnect-App-Registration.png?raw=true "Konnect Dev Portal configuration - Edit App Registration")
 
 ## Test the Bridge from Konnect Dev Portal
 1) Login to Konnect Dev Portal
