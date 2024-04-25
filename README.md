@@ -3,7 +3,11 @@ This repository is an implementation of an HTTP DCR bridge to enable [Dynamic Cl
 
 This repository is forked from https://github.com/Kong/konnect-portal-dcr-handler. Please read the [README.md](https://github.com/Kong/konnect-portal-dcr-handler?tab=readme-ov-file) of this repo.
 
-The HTTP DCR bridge is deployed as a serverless solution on AWS Lambda or as a Docker container and it's based on a  lightweight [fastify](https://fastify.dev/) Node.js server.
+The HTTP DCR bridge can be built and deployed in 2 ways:
+  - As a Serverless solution on AWS Lambda
+  - As a Docker image deployed in Docker / Kubernetes / OpenShift
+  
+The HTTP DCR bridge is based on a lightweight [fastify](https://fastify.dev/) Node.js server
 
 ## Prerequisites
 ### Git clone
