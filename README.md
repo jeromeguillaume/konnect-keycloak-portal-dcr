@@ -72,7 +72,7 @@ Select the best option in regards your technical environment
 
 **Click on Save**
 
-See the Bridge Function URL related `<Bridge_Function_url-to-be-replaced>` (here: https://3w7r6pdhh6rgn7iia7sqotrdxm0hrspz.lambda-url.eu-west-3.on.aws/)
+See the Bridge Function URL related to `<Bridge_Function_url-to-be-replaced>` (here: https://3w7r6pdhh6rgn7iia7sqotrdxm0hrspz.lambda-url.eu-west-3.on.aws/)
 ![Alt text](/images/3-AWS-Lambda-function.png?raw=true "AWS Lambda - creation")
 
 ### AWS S3 Bucket
@@ -231,7 +231,7 @@ service/svc-konnect-portal-dcr-keycloak created
 ```sh
 kubectl get svc svc-konnect-portal-dcr-keycloak -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
 ```
-It's the Bridge Function URL related `<Bridge_Function_url-to-be-replaced>`
+It's the Bridge Function URL related to `<Bridge_Function_url-to-be-replaced>`
 
 ## Konnect Gateway Service configuration
 1) Have a Kong Konnect account
