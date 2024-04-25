@@ -254,7 +254,6 @@ It's the Bridge Function URL related to `<Bridge_Function_url-to-be-replaced>`
 
 **Click on Save**
 
-
 ## Konnect Dev Portal configuration
 1) Login to [konnect](https://cloud.konghq.com)
 2) Select Dev Portal / Application Auth menu, select DCR Providers tab, click on `+ New DCR Provider` and configure with:
