@@ -90,7 +90,7 @@ docker buildx build --push --platform linux/amd64,linux/arm64 --tag jeromeguilla
 ```
 
 ## Optional: test locally the HTTP DCR Bridge
-if you don't want ot test locally the Bridge you can skip this section and go to [Deploy the HTTP DCR Bridge](#deploy-the-http-dcr-bridge)
+if you don't want to test locally the Bridge you can skip this section and go to [Deploy the HTTP DCR Bridge](#deploy-the-http-dcr-bridge)
 
 2 options are available to run locally HTTP DCR Bridge:
   - On the computer OS
