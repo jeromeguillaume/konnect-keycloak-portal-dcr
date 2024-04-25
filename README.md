@@ -5,7 +5,7 @@ This repository is forked from https://github.com/Kong/konnect-portal-dcr-handle
 
 The HTTP DCR bridge can be built and deployed in 2 ways:
   - As a Serverless solution on AWS Lambda
-  - As a Docker image deployed in Docker / Kubernetes / OpenShift
+  - As a Docker image deployed on Docker / Kubernetes / OpenShift
   
 The HTTP DCR bridge is based on a lightweight [fastify](https://fastify.dev/) Node.js server
 
@@ -196,7 +196,7 @@ Check on Keycloak the deletion of this `client`
 
 ## Deploy the HTTP DCR Bridge
 
-### Deploy the bridge in an AWS Lambda Function
+### Deploy the bridge on AWS Lambda Function
 - The Git Workflow [ci.yml](.github/workflows/ci.yml) pushes the DCR Handler code in the Lambda Function.
 - Prepare and start a `self-hosted` Github Runner: open with the browser your Github repo and select Settings / Actions / Runners and click on `New self-hosted runner` 
 - Create Environment secrets: select Settings / Secrets and variables / Environment secrets with:
@@ -210,7 +210,7 @@ aws sso login
 ```
 - Do a Commit & Push of your repo, check in GitHub the green status of your CI workflow
 
-### Deploy the Bridge in Kubernetes / OpenShift with the Docker image
+### Deploy the Bridge on Kubernetes / OpenShift with the Docker image
 1) Create an `.env` file
   - See [Test locally the HTTP DCR Bridge](#optional-test-locally-the-http-dcr-bridge) for having the right syntax
 
