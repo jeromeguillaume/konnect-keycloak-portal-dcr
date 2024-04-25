@@ -274,13 +274,26 @@ aws sso login
 - Do a Commit & Push of your repo, check in GitHub the green status of your CI workflow
 
 ### Deploy the Bridge in Kubernetes / OpenShift with the Docker image
-1) Create an .env file
-See [env](#Test-locally-the-HTTP-DCR-Bridge)
+1) Create an `.env` file
+  - See [Test locally the HTTP DCR Bridge](#Test-locally-the-HTTP-DCR-Bridge) for having the syntax
 
 2) Create the secret
 ```sh
+cd konnect-keycloak-portal-dcr
 kubectl create secret generic sec-konnect-keycloak-portal-dcr --from-env-file=.env
 ```
+
+3) Create the Deployment and Service
+```sh
+kubectl create -f kubernetes/konnect-keycloak-portal-dcr.yaml
+```
+
+The results should look like this:
+```
+
+```
+
+export PROXY_IP=$(kubectl get svc kong-gateway-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 
 ## Test the Bridge from Konnect Dev Portal
 1) Login to Konnect Dev Portal
