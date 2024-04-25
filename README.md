@@ -24,7 +24,7 @@ The properties are:
   - Service Accounts = `Enabled`
   - OAuth 2.0 Device Authorization Grant = `Enabled`
   - Valid Redirect URIs = `http//*` and `https://*`
-  
+
   **Click on Save**
 
 3) Open the `kong-sa` client, select `Service Account Roles` tab, select in `Client Roles` the `realm-management` and assign roles: 
@@ -43,7 +43,7 @@ The properties are:
     - runtime = `Node.js 20.x`
     - Advanced settings / Enable function URL = `enabled`
 
-  **Click on Create function**
+**Click on Create function**
 
 2) Open the Function
   - Change `Code` / `Runtime settings`: handler = `lambda.handler`
@@ -55,7 +55,7 @@ The properties are:
     - KEYCLOAK_DOMAIN = `<keycloak-domain-to-be-replaced>` (example: https://sso.apim.eu:8443/auth/realms/Jerome/)
     - KONG_API_TOKENS = `<your_Konnect_API_Key_value>` Put a random strong key value
 
-    **Click on Save**
+**Click on Save**
 
 See the Bridge Function URL (here: https://3w7r6pdhh6rgn7iia7sqotrdxm0hrspz.lambda-url.eu-west-3.on.aws/)
 ![Alt text](/images/3-AWS-Lambda-function.png?raw=true "AWS Lambda - creation")
@@ -71,7 +71,7 @@ See the Bridge Function URL (here: https://3w7r6pdhh6rgn7iia7sqotrdxm0hrspz.lamb
   - DCR Base URL = `<Bridge_Function_url-to-be-replaced>`
   - API Key = `<your_Konnect_API_Key_value>` Put the same vlue defined above
   
-    **Click on Save**
+**Click on Save**
 ![Alt text](/images/4a-Konnect-New-DCR-Provider.png?raw=true "Konnect Dev Portal configuration - New DCR Provider")
 
 4) Select Dev Portal / Application Auth menu, click on `+ New Auth Strategy` and configure with:
@@ -83,25 +83,25 @@ See the Bridge Function URL (here: https://3w7r6pdhh6rgn7iia7sqotrdxm0hrspz.lamb
   - Credential Claims = `clientId`
   - Auth Method = `bearer` and `client_credentials`
     
-    **Click on Save**
+**Click on Save**
 
 ![Alt text](/images/4b-Konnect-New-Auth.png?raw=true "Konnect Dev Portal configuration - New Auth Strategy")
 
 4) Select API Products menu, click on `+ API Product` and configure with:
   - Product Name = `Test`
 
-    **Click on Save**
+**Click on Save**
 ![Alt text](/images/4c-Konnect-New-API-Product.png?raw=true "Konnect Dev Portal configuration - New API Product")
 5) Select Product Versions menu, click on `+ New Version` and configure with:
   - Product Version Name = `v1`
 
-    **Click on Save**
+**Click on Save**
 6) Update the `unpublished` Status to `published` and check `Publish API Product` and **Click on Save**
 7) Update the `disabled` App Registration to `enabled` with:
   - Auth Strategy = `Auth DCR Keycloak`
   - App Registration Enabled
   
-    **Click on Save**
+**Click on Save**
 ![Alt text](/images/4d-Konnect-App-Registration.png?raw=true "Konnect Dev Portal configuration - Edit App Registration")
 
 ### S3 Bucket
