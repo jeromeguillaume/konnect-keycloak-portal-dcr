@@ -262,7 +262,7 @@ It's the Bridge Function URL related to `<Bridge_Function_url-to-be-replaced>`
   - Issuer URL = `<keycloak-domain-to-be-replaced>`
   - Provider Type = `HTTP`
   - DCR Base URL = `<Bridge_Function_url-to-be-replaced>`
-  - API Key = `<your_Konnect_API_Key_value>` Put the same value defined above
+  - API Key = `<your_Konnect_API_Key_value>` - Put the same value got before
   
 **Click on Save**
 ![Alt text](/images/4a-Konnect-New-DCR-Provider.png?raw=true "Konnect Dev Portal configuration - New DCR Provider")
