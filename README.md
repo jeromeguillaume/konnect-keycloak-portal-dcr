@@ -96,7 +96,11 @@ See the Bridge Function URL (here: https://3w7r6pdhh6rgn7iia7sqotrdxm0hrspz.lamb
   - Product Version Name = `v1`
 
 **Click on Save**
-6) Update the `unpublished` Status to `published` and check `Publish API Product` and **Click on Save**
+
+6) Update the `unpublished` Status to `published` and check `Publish API Product`
+
+**Click on Save**
+
 7) Update the `disabled` App Registration to `enabled` with:
   - Auth Strategy = `Auth DCR Keycloak`
   - App Registration Enabled
