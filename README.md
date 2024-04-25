@@ -65,15 +65,15 @@ See the Bridge Function URL (here: https://3w7r6pdhh6rgn7iia7sqotrdxm0hrspz.lamb
   - You can Start a Free trial at: [konghq.com](https://konghq.com/products/kong-konnect/register)
 2) Login to konnect
 3) Select Gateway Manager menu and open your `Gateway Manager`
-4) Create a new `myhttpbin` Gateway Service with:
-  - Name = `myhttpbin`
+4) Create a new `httpbin` Gateway Service with:
+  - Name = `httpbin`
   - Upstream URL = `http://httpbin.apim.eu`
 
 **Click on Save**
 
-5) Create a new `myhttpbin` Route to the Gateway Service with:
+5) Create a new `httpbin` Route to the Gateway Service with:
   - Name = `httpbin`
-  - Path = `/myhttpbin`
+  - Path = `/httpbin`
 
 **Click on Save**
 
@@ -233,7 +233,7 @@ aws sso login
 7) Test access 
 - Request:
 ```sh
-http -a 1d2d6ea6-b409-4583-a0f1-8413d8603359:pW1qkzutE6czuO78oTL2GRSkEq8HL05l :8000/myhttpbin/anything
+http -a 1d2d6ea6-b409-4583-a0f1-8413d8603359:pW1qkzutE6czuO78oTL2GRSkEq8HL05l :8000/httpbin/anything
 ```
 - Response:
 ```sh
