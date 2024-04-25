@@ -115,7 +115,7 @@ See the Bridge Function URL (here: https://3w7r6pdhh6rgn7iia7sqotrdxm0hrspz.lamb
 
 6) Link with a Gateway Service by cicking on `+ Link`:
   - Select Control Plane = `Your Control Plane` stands for `Gateway Manager`
-  - Gateway Service = `myhttpbin`
+  - Gateway Service = `httpbin`
 
 **Click on Save**
 
