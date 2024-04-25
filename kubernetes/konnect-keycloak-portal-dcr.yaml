@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: konnect-portal-dcr-keycloak
+  name: konnect-portal-dcr-keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: konnect-portal-dcr-keycloak
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: konnect-portal-dcr-keycloak
+    spec:
+      containers:
+      - image: jeromeguillaume/konnect-keycloak-portal-dcr:1.1
+        name: konnect-keycloak-portal-dcr
+        envFrom:
+        - secretRef:
+            name: sec-konnect-keycloak-portal-dcr
+        ports:
+        - containerPort: 3000
+        resources: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: konnect-portal-dcr-keycloak
+  name: svc-konnect-portal-dcr-keycloak
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app: konnect-portal-dcr-keycloak
+  type: LoadBalancer

@@ -21,4 +21,3 @@ yarn-error.log*
 dist
 .gitignore
 start-bridge-docker.sh
-kubernetes/konnect-keycloak-portal-dcr.yaml
