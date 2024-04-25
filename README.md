@@ -72,8 +72,8 @@ Select the best option in regards your technical environment
 
 **Click on Save**
 
-See the Bridge Function URL (here: https://3w7r6pdhh6rgn7iia7sqotrdxm0hrspz.lambda-url.eu-west-3.on.aws/)
-![Alt text](/images/3-AWS-Lambda-function.png?raw=true "AWS Lambda - creation") related `<Bridge_Function_url-to-be-replaced>`
+See the Bridge Function URL related `<Bridge_Function_url-to-be-replaced>` (here: https://3w7r6pdhh6rgn7iia7sqotrdxm0hrspz.lambda-url.eu-west-3.on.aws/)
+![Alt text](/images/3-AWS-Lambda-function.png?raw=true "AWS Lambda - creation")
 
 ### AWS S3 Bucket
 - Create a S3 bucket and call it for instance `konnect-portal-dcr-keycloak`
