@@ -187,16 +187,20 @@ yarn start
 ```
 
 **OR**
+
+---
+
 1) Start HTTP DCR Bridge on Docker
 ```sh
 docker run -p 3000:3000 \
 --name konnect-keycloak-portal-dcr \
+--platform linux/amd64 \
 -e KEYCLOAK_CR_INITIAL_AT=<initial_at-to-be-replaced> \
 -e KEYCLOAK_CLIENT_ID=kong-sa \
 -e KEYCLOAK_CLIENT_SECRET=<kong-sa-client_secret-to-be-replaced> \
 -e KEYCLOAK_DOMAIN=<keycloak-domain-to-be-replaced> \
 -e KONG_API_TOKENS=<your_Konnect_API_Key_value> \
-jeromeguillaume/konnect-keycloak-portal-dcr:1.0
+jeromeguillaume/konnect-keycloak-portal-dcr:1.1
 ```
 
 2) Create a new Application
@@ -270,6 +274,13 @@ aws sso login
 - Do a Commit & Push of your repo, check in GitHub the green status of your CI workflow
 
 ### Deploy the Bridge in Kubernetes / OpenShift with the Docker image
+1) Create an .env file
+See [env](#Test-locally-the-HTTP-DCR-Bridge)
+
+2) Create the secret
+```sh
+kubectl create secret generic sec-konnect-keycloak-portal-dcr --from-env-file=.env
+```
 
 ## Test the Bridge from Konnect Dev Portal
 1) Login to Konnect Dev Portal
