@@ -212,7 +212,7 @@ aws sso login
 
 ### Deploy the Bridge in Kubernetes / OpenShift with the Docker image
 1) Create an `.env` file
-  - See [Test locally the HTTP DCR Bridge](#Test-locally-the-HTTP-DCR-Bridge) for having the syntax
+  - See [Test locally the HTTP DCR Bridge](#optional-test-locally-the-http-dcr-bridge) for having the right syntax
 
 2) Create the secret
 ```sh
