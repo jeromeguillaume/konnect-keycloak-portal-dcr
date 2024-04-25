@@ -153,10 +153,10 @@ yarn start
 The fastify server is started by default on port 3000
 
 1) Create a new Application
-- Request: `<DCR_token-to-be-replaced>`, `<portal_id-to-be-replaced>`, `<organization_id-to-be-replaced>` have to be replaced by their proper value. Go on Konnect / Dev Portal to get `portal_id` and `organization_id`
+- Request: `<your_Konnect_API_Key_value>`, `<portal_id-to-be-replaced>`, `<organization_id-to-be-replaced>` have to be replaced by their proper value. Go on Konnect / Dev Portal to get `portal_id` and `organization_id`
 ```sh
 http POST :3000/ redirect_uris=http://localhost \
-    x-api-key:<DCR_token-to-be-replaced> \
+    x-api-key:<your_Konnect_API_Key_value> \
     client_name=jegvscode1 \
     application_description=\
     grant_types\[\]=authorization_code \
@@ -182,7 +182,7 @@ Check on Keycloak the creation of this new `client`
 2) Refresh a `client_secret` of an Application
 - Request:
 ```sh
-http POST :3000/f54b9dc4-ee16-4a99-bfc9-4107ae73d6a4/new-secret x-api-key:<DCR_token-to-be-replaced>
+http POST :3000/f54b9dc4-ee16-4a99-bfc9-4107ae73d6a4/new-secret x-api-key:<your_Konnect_API_Key_value>
 ```
 - Response:
 ```sh
@@ -198,7 +198,7 @@ Check on Keycloak the value of the new `client_secret`
 3) Delete an Application
 - Request:
 ```sh
-http DELETE :3000/f54b9dc4-ee16-4a99-bfc9-4107ae73d6a4 x-api-key:<DCR_token-to-be-replaced>
+http DELETE :3000/f54b9dc4-ee16-4a99-bfc9-4107ae73d6a4 x-api-key:<your_Konnect_API_Key_value>
 ```
 - Response:
 ```sh
