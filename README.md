@@ -65,15 +65,15 @@ See the Bridge Function URL (here: https://3w7r6pdhh6rgn7iia7sqotrdxm0hrspz.lamb
   - You can Start a Free trial at: [konghq.com](https://konghq.com/products/kong-konnect/register)
 2) Login to konnect
 3) Select Gateway Manager menu and open your `Gateway Manager`
-4) Create a new `httpbin` Gateway Service with:
-  - Name = `httpbin`
+4) Create a new `myhttpbin` Gateway Service with:
+  - Name = `myhttpbin`
   - Upstream URL = `http://httpbin.apim.eu`
 
 **Click on Save**
 
-5) Create a new `httpbin` Route to the Gateway Service with:
+5) Create a new `myhttpbin` Route to the Gateway Service with:
   - Name = `httpbin`
-  - Path = `/httpbin`
+  - Path = `/myhttpbin`
 
 **Click on Save**
 
@@ -115,7 +115,7 @@ See the Bridge Function URL (here: https://3w7r6pdhh6rgn7iia7sqotrdxm0hrspz.lamb
 
 6) Link with a Gateway Service by cicking on `+ Link`:
   - Select Control Plane = `Your Control Plane` stands for `Gateway Manager`
-  - Gateway Service = `httpbin`
+  - Gateway Service = `myhttpbin`
 
 **Click on Save**
 
