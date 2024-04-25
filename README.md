@@ -34,7 +34,7 @@ The properties are:
       - `view-clients`
 ![Alt text](/images/2-keycloak-kong-sa.png?raw=true "kong-sa - Client Service Account")
 
-### Lambda function (first steps)
+### Lambda function
 1) Create the Function
   - Connect to the AWS Console
   - Select the proper region (for instance `eu-central-1`)
@@ -53,34 +53,56 @@ The properties are:
     - KEYCLOAK_CLIENT_SECRET = `<kong-sa-client_secret-to-be-replaced>`
     - KEYCLOAK_CR_INITIAL_AT = `<initial_at-to-be-replaced>` (see step#1 - Keycloak configuration)
     - KEYCLOAK_DOMAIN = `<keycloak-domain-to-be-replaced>` (example: https://sso.apim.eu:8443/auth/realms/Jerome/)
+    - KONG_API_TOKENS = `<your_Konnect_API_Key_value>` Put a random strong key value
 
-**Click on Save**
+    **Click on Save**
 
-See the Function URL (here: https://3w7r6pdhh6rgn7iia7sqotrdxm0hrspz.lambda-url.eu-west-3.on.aws/)
+See the Bridge Function URL (here: https://3w7r6pdhh6rgn7iia7sqotrdxm0hrspz.lambda-url.eu-west-3.on.aws/)
 ![Alt text](/images/3-AWS-Lambda-function.png?raw=true "AWS Lambda - creation")
 
 ### Konnect Dev Portal configuration
 1) Have a Kong Konnect account
   - You can Start a Free trial at: [konghq.com](https://konghq.com/products/kong-konnect/register)
 2) Login to konnect
-3) Select Dev Portal / Settings / Application Setup menu and configure with:
-  - External identity provider for applications = `HTTP`
-  - Issuer = `<keycloak-domain-to-be-replaced>`
-  - HTTP Base URL = `<AWS_Function_url-to-be-replaced>`
+3) Select Dev Portal / Application Auth menu, select DCR Providers tab, click on `+ New DCR Provider` and configure with:
+  - Name = `DCR Keycloak`
+  - Issuer URL = `<keycloak-domain-to-be-replaced>`
+  - Provider Type = `HTTP`
+  - DCR Base URL = `<Bridge_Function_url-to-be-replaced>`
+  - API Key = `<your_Konnect_API_Key_value>` Put the same vlue defined above
+  
+    **Click on Save**
+![Alt text](/images/4a-Konnect-New-DCR-Provider.png?raw=true "Konnect Dev Portal configuration - New DCR Provider")
+
+4) Select Dev Portal / Application Auth menu, click on `+ New Auth Strategy` and configure with:
+  - Name = `Auth DCR Keycloak`
+  - Display Name = `Auth DCR Keycloak`
+  - Auth Type = `DCR`
+  - DCR Provider = `DCR Keycloak`
   - Scopes = `openid`
-  - Consumer claims = `clientId`
-  - Auth methods = check `Bearer Access Token` and `Client Credentials Grant`
-  - DCR Token = click on `Generate Token` and **store the DCR token**
+  - Credential Claims = `clientId`
+  - Auth Method = `bearer` and `client_credentials`
+    
+    **Click on Save**
 
-**Click on Save**
-![Alt text](/images/4-Konnect-Application-setup.png?raw=true "Konnect Dev Portal configuration")
+![Alt text](/images/4b-Konnect-New-Auth.png?raw=true "Konnect Dev Portal configuration - New Auth Strategy")
 
-### Lambda function (last step)
-1) Open the Function
-  - Open `Configuration`/`Environment variables` and Edit:
-    - KONG_API_TOKENS = `<DCR_token-to-be-replaced>` (see step#3 - Konnect Dev Portal configuration)
+4) Select API Products menu, click on `+ API Product` and configure with:
+  - Product Name = `Test`
 
-**Click on Save**
+    **Click on Save**
+![Alt text](/images/4c-Konnect-New-API-Product.png?raw=true "Konnect Dev Portal configuration - New API Product")
+5) Select Product Versions menu, click on `+ New Version` and configure with:
+  - Product Version Name = `v1`
+
+    **Click on Save**
+6) Update the `unpublished` Status to `published` and check `Publish API Product` and **Click on Save**
+7) Update the `disabled` App Registration to `enabled` with:
+  - Auth Strategy = `Auth DCR Keycloak`
+  - App Registration Enabled
+  
+    **Click on Save**
+![Alt text](/images/4d-Konnect-App-Registration.png?raw=true "Konnect Dev Portal configuration - Edit App Registration")
 
 ### S3 Bucket
 - Create a S3 bucket and call it for instance `konnect-portal-dcr-keycloak`
