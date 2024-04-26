@@ -88,7 +88,7 @@ See the Bridge Function URL related to `<Bridge_Function_url-to-be-replaced>` (h
 ### Docker image
 - Build and Push the Docker image for linux/arm64 and linux/amd64
 ```
-cd konnect-keycloak-portal-dcr/docker
+cd konnect-keycloak-portal-dcr
 docker buildx create --use --platform=linux/amd64,linux/arm64 --name multi-platform-builder
 docker buildx build --push --platform linux/amd64,linux/arm64 --tag jeromeguillaume/konnect-keycloak-portal-dcr:1.1 .
 ```
