@@ -212,15 +212,18 @@ aws sso login
 
 ### Deploy the Bridge on Kubernetes / OpenShift with the Docker image
 1) Create an `.env` file
-  - See [Test locally the HTTP DCR Bridge](#optional-test-locally-the-http-dcr-bridge) for having the right syntax
+  - See [Test locally the HTTP DCR Bridge](#optional-test-locally-the-http-dcr-bridge) for having the content
 
 2) Create the Secret
 ```sh
 cd konnect-keycloak-portal-dcr
+```
+```sh
 kubectl create secret generic sec-konnect-keycloak-portal-dcr --from-env-file=.env
 ```
 
-3) Create the Deployment and Service
+3) Create the Deployment and Service. 
+See [konnect-keycloak-portal-dcr.yaml](kubernetes/konnect-keycloak-portal-dcr.yaml)
 ```sh
 kubectl create -f kubernetes/konnect-keycloak-portal-dcr.yaml
 ```
