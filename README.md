@@ -359,4 +359,4 @@ HTTP/1.1 200 OK
 ![Alt text](/images/12-Keycloak-AppDeleted.png?raw=true "Keycloak - Deleted App")
 
 ## Other material
-see in [notes.txt](notes.txt) example of commands (like curl) to call directly Keycloak APIs
+see in [notes.txt](notes.txt) example of commands to call directly Keycloak APIs
