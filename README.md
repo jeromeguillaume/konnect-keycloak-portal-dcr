@@ -288,6 +288,7 @@ It's the Bridge Function URL related to `<Bridge_Function_url-to-be-replaced>`
 
 **Click on Save**
 ![Alt text](/images/4c-Konnect-New-API-Product.png?raw=true "Konnect Dev Portal configuration - New API Product")
+
 5) Select Product Versions menu, click on `+ New Version` and configure with:
   - Product Version Name = `v1`
 
@@ -311,16 +312,17 @@ It's the Bridge Function URL related to `<Bridge_Function_url-to-be-replaced>`
 ![Alt text](/images/4d-Konnect-App-Registration.png?raw=true "Konnect Dev Portal configuration - Edit App Registration")
 
 ## Test the Bridge from Konnect Dev Portal
-1) Login to Konnect Dev Portal
-2) Click on `My Apps` under your profile name
-3) Click on `New App`
+1. Login to Konnect Dev Portal
+2. Click on `My Apps` under your profile name
+3. Click on `New App`
+4. Set the values as shown and click on `Create`
 ![Alt text](/images/6-Konnect-DevPortal-NewApp.png?raw=true "Konnect Dev Portal - New App")
-4) Click on `Create`
+5. Copy the `client_id` and `client_secret` and click on `Proceed`
 ![Alt text](/images/7-Konnect-DevPortal-NewApp.png?raw=true "Konnect Dev Portal - New client_id/client_secret")
-5) Go on Keycloak and check the new Client
+6. Go on Hydra Server and check the new Client
 ![Alt text](/images/8-Keycloak-NewClient.png?raw=true "Keycloak - New client")
-6) Go on Catalog, Select a Service and Register it to the new App
-7) Test access 
+7. Go on Catalog, Select a Service and Register it to the new App
+8. Test access to the API published on the DevPortal by using the new `client_id` and `client_secret`
 - Request:
 ```sh
 http -a 1d2d6ea6-b409-4583-a0f1-8413d8603359:pW1qkzutE6czuO78oTL2GRSkEq8HL05l :8000/httpbin/anything
@@ -343,13 +345,13 @@ HTTP/1.1 200 OK
     "url": "https://localhost/anything"
 }
 ```
-8) Test the Refresh secret
+9. Test the Refresh secret
 - Select `My App`
 - Select `Refresh secret` menu
 ![Alt text](/images/9-Konnect-Refresh-secret.png?raw=true "Konnect Dev Portal - Refresh secret")
-9) Go on Keycloak and check the new value of `client_secret` value`
+10. Go on Keycloak and check the new value of `client_secret` value`
 ![Alt text](/images/10-Keycloak-Secret.png?raw=true "Keycloak - Refresh secret")
-10) Delete the App
+11. Delete the App
 - Select `My App`
 - Select `Delete`
 ![Alt text](/images/11-Konnect-DevPortal-DeleteApp.png?raw=true "Konnect Dev Portal - Delete App")
