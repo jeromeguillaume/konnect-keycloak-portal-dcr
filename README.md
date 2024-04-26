@@ -233,7 +233,7 @@ The results should look like this:
 deployment.apps/konnect-portal-dcr-keycloak created
 service/svc-konnect-portal-dcr-keycloak created
 ```
-**Keep in mind that the Bridge listens on HTTP an not HTTPS. Protect the traffic by deploying it through the Kong Gateway.**
+**Keep in mind that the Bridge listens on HTTP an not HTTPS. The bridge has to be secured by the Kong Gateway**
 
 4) Get the URL of the Bridge
 ```sh
