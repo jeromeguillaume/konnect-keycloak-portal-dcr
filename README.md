@@ -20,7 +20,7 @@ git clone https://github.com/jeromeguillaume/konnect-keycloak-portal-dcr.git
 Install Yarn [^1.22.x](https://classic.yarnpkg.com/lang/en/docs/install)
 
 ### Docker
-If you want to build a Docker image (for the HTTP DCR bridge) enabling a Kubernetes/OpenShift deployment, install [Docker](https://docs.docker.com/engine/install/)
+If you want to build a Docker image (for the HTTP DCR bridge) for enabling a Kubernetes/OpenShift deployment, install [Docker](https://docs.docker.com/engine/install/)
 
 ### Httpie
 Install [Httpie](https://httpie.io/cli)
@@ -47,12 +47,12 @@ The properties are:
 ![Alt text](/images/2-keycloak-kong-sa.png?raw=true "kong-sa - Client Service Account")
 
 ## Build the HTTP DCR bridge
-
 2 options are available for the HTTP DCR bridge building:
   - AWS Lambda Function
   - Docker image (for Kubernetes/OpenShift)
 
 Select the best option in regards your technical environment
+
 ### AWS Lambda Function
 1) Create the Function
   - Connect to the AWS Console
@@ -86,9 +86,9 @@ See the Bridge Function URL related to `<Bridge_Function_url-to-be-replaced>` (h
 ![Alt text](/images/4-AWS-S3-bucket.png?raw=true "AWS S3 bucket")
 
 ### Docker image
-1) Build and Push the Docker image for linux/arm64 and linux/amd64
+- Build and Push the Docker image for linux/arm64 and linux/amd64
 ```
-cd konnect-keycloak-portal-dcr
+cd konnect-keycloak-portal-dcr/docker
 docker buildx create --use --platform=linux/amd64,linux/arm64 --name multi-platform-builder
 docker buildx build --push --platform linux/amd64,linux/arm64 --tag jeromeguillaume/konnect-keycloak-portal-dcr:1.1 .
 ```
@@ -132,19 +132,19 @@ yarn start
 docker run -p 3000:3000 \
 --name konnect-keycloak-portal-dcr \
 --platform linux/amd64 \
--e KEYCLOAK_CR_INITIAL_AT=<initial_at-to-be-replaced> \
--e KEYCLOAK_CLIENT_ID=kong-sa \
--e KEYCLOAK_CLIENT_SECRET=<kong-sa-client_secret-to-be-replaced> \
--e KEYCLOAK_DOMAIN=<keycloak-domain-to-be-replaced> \
--e KONG_API_TOKENS=<your_Konnect_API_Key_value> \
+-e "KEYCLOAK_CR_INITIAL_AT=<initial_at-to-be-replaced>" \
+-e "KEYCLOAK_CLIENT_ID=kong-sa" \
+-e "KEYCLOAK_CLIENT_SECRET=<kong-sa-client_secret-to-be-replaced>" \
+-e "KEYCLOAK_DOMAIN=<keycloak-domain-to-be-replaced>" \
+-e "KONG_API_TOKENS=<your_Konnect_API_Key_value>" \
 jeromeguillaume/konnect-keycloak-portal-dcr:1.1
 ```
 
 2) Create a new Application
-- Request: `<DCR_token-to-be-replaced>`, `<portal_id-to-be-replaced>`, `<organization_id-to-be-replaced>` have to be replaced by their proper value. Go on Konnect / Dev Portal to get `portal_id` and `organization_id`
+- Request: `<your_Konnect_API_Key_value>`, `<portal_id-to-be-replaced>`, `<organization_id-to-be-replaced>` have to be replaced by their proper value. Go on Konnect / Dev Portal to get `portal_id` and `organization_id`
 ```sh
 http POST :3000/ redirect_uris=http://localhost \
-    x-api-key:<DCR_token-to-be-replaced> \
+    x-api-key:<your_Konnect_API_Key_value> \
     client_name=jegvscode1 \
     application_description=\
     grant_types\[\]=authorization_code \
@@ -170,7 +170,7 @@ Check on Keycloak the creation of this new `client`
 3) Refresh a `client_secret` of an Application
 - Request:
 ```sh
-http POST :3000/f54b9dc4-ee16-4a99-bfc9-4107ae73d6a4/new-secret x-api-key:<DCR_token-to-be-replaced>
+http POST :3000/f54b9dc4-ee16-4a99-bfc9-4107ae73d6a4/new-secret x-api-key:<your_Konnect_API_Key_value>
 ```
 - Response:
 ```sh
@@ -186,7 +186,7 @@ Check on Keycloak the value of the new `client_secret`
 4) Delete an Application
 - Request:
 ```sh
-http DELETE :3000/f54b9dc4-ee16-4a99-bfc9-4107ae73d6a4 x-api-key:<DCR_token-to-be-replaced>
+http DELETE :3000/f54b9dc4-ee16-4a99-bfc9-4107ae73d6a4 x-api-key:<your_Konnect_API_Key_value>
 ```
 - Response:
 ```sh
@@ -211,7 +211,7 @@ aws sso login
 - Do a Commit & Push of your repo, check in GitHub the green status of your CI workflow
 
 ### Deploy the Bridge on Kubernetes / OpenShift with the Docker image
-1) Create an `.env` file
+1) Create an `.env` file at the root of this project
   - See [Test locally the HTTP DCR Bridge](#optional-test-locally-the-http-dcr-bridge) for having the content
 
 2) Create the Secret
@@ -222,7 +222,7 @@ cd konnect-keycloak-portal-dcr
 kubectl create secret generic sec-konnect-keycloak-portal-dcr --from-env-file=.env
 ```
 
-3) Create the Deployment and Service. 
+3) Create the Deployment and Service (as a LoadBlancer)
 See [konnect-keycloak-portal-dcr.yaml](kubernetes/konnect-keycloak-portal-dcr.yaml)
 ```sh
 kubectl create -f kubernetes/konnect-keycloak-portal-dcr.yaml
@@ -355,3 +355,6 @@ HTTP/1.1 200 OK
 ![Alt text](/images/11-Konnect-DevPortal-DeleteApp.png?raw=true "Konnect Dev Portal - Delete App")
 11) Go on Keycloak and check that the client is no longer present
 ![Alt text](/images/12-Keycloak-AppDeleted.png?raw=true "Keycloak - Deleted App")
+
+## Other material
+see in [notes.txt](notes.txt) example of commands (like curl) to call directly Keycloak APIs
