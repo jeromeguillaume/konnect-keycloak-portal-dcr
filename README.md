@@ -319,7 +319,7 @@ It's the Bridge Function URL related to `<Bridge_Function_url-to-be-replaced>`
 ![Alt text](/images/6-Konnect-DevPortal-NewApp.png?raw=true "Konnect Dev Portal - New App")
 5. Copy the `client_id` and `client_secret` and click on `Proceed`
 ![Alt text](/images/7-Konnect-DevPortal-NewApp.png?raw=true "Konnect Dev Portal - New client_id/client_secret")
-6. Go on Hydra Server and check the new Client
+6. Go on Keycloak and check the new Client
 ![Alt text](/images/8-Keycloak-NewClient.png?raw=true "Keycloak - New client")
 7. Go on Catalog, Select a Service and Register it to the new App
 8. Test access to the API published on the DevPortal by using the new `client_id` and `client_secret`
