@@ -141,7 +141,7 @@ jeromeguillaume/konnect-keycloak-portal-dcr:1.1
 ```
 
 2) Create a new Application
-- Request: `<your_Konnect_API_Key_value>`, `<portal_id-to-be-replaced>`, `<organization_id-to-be-replaced>` have to be replaced by their proper value. Go on Konnect / Dev Portal to get `portal_id` and `organization_id`
+- Request: replace `<your_Konnect_API_Key_value>`, `<portal_id-to-be-replaced>`, `<organization_id-to-be-replaced>` by their proper value. Go on Konnect / Dev Portal to get `portal_id` and `organization_id`
 ```sh
 http POST :3000/ redirect_uris=http://localhost \
     x-api-key:<your_Konnect_API_Key_value> \
