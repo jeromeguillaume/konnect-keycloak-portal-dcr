@@ -4,7 +4,9 @@ COPY package.json .
 COPY tsconfig.json .
 COPY src /src
 
-RUN yarn install --frozen-lockfile
+RUN npm install -g ts-node
+
+RUN yarn install --production --frozen-lockfile
 
 COPY .env.dockerfile .env
 
