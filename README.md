@@ -129,7 +129,7 @@ yarn start
 
 1) Start HTTP DCR Bridge on Docker
 ```sh
-docker run -p 3000:3000 \
+docker run -p 3000:3000 -d \
 --name konnect-keycloak-portal-dcr \
 --platform linux/amd64 \
 -e "KEYCLOAK_CR_INITIAL_AT=<initial_at-to-be-replaced>" \
