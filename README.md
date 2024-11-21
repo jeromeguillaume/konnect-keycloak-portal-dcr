@@ -203,7 +203,7 @@ Check on Keycloak the deletion of this `client`
 - The Git Workflow [ci.yml](.github/workflows/ci.yml) pushes the DCR Handler code in the Lambda Function.
 - Prepare and start a `self-hosted` Github Runner: open with the browser your Github repo and select Settings / Actions / Runners and click on `New self-hosted runner` 
 - Create Environment secrets: select Settings / Secrets and variables / Environment secrets with:
-  - Environment called `dev` with those variables:
+  - Environment: `dev` with those variables:
     - AWS_ROLE_NAME: `<function_arn-to-be-replaced>` (example: `arn:aws:lambda:eu-west-3:162225303348:function:konnect-portal-dcr-keycloak`)
     - BUCKET_NAME: `konnect-portal-dcr-keycloak`
     - FUNCTION_NAME: `konnect-portal-dcr-keycloak`
