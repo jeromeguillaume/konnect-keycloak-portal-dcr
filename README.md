@@ -10,10 +10,13 @@ The HTTP DCR bridge can be built and deployed in 2 ways:
 The HTTP DCR bridge is based on a lightweight [fastify](https://fastify.dev/) Node.js server
 
 ## Prerequisites
-### Git clone
-Do a git clone of this repository
+### Fork this repository
+Fork this repository
+
+### Git clone (your forked repository)
+Do a git clone of your forked repository
 ```sh
-git clone https://github.com/jeromeguillaume/konnect-keycloak-portal-dcr.git
+git clone https://github.com/<**YOUR_NAME**>/konnect-keycloak-portal-dcr.git
 ```
 
 ### Yarn
@@ -200,9 +203,10 @@ Check on Keycloak the deletion of this `client`
 - The Git Workflow [ci.yml](.github/workflows/ci.yml) pushes the DCR Handler code in the Lambda Function.
 - Prepare and start a `self-hosted` Github Runner: open with the browser your Github repo and select Settings / Actions / Runners and click on `New self-hosted runner` 
 - Create Environment secrets: select Settings / Secrets and variables / Environment secrets with:
-  - AWS_ROLE_NAME: `<function_arn-to-be-replaced>` (example: `arn:aws:lambda:eu-west-3:162225303348:function:konnect-portal-dcr-keycloak`)
-  - BUCKET_NAME: `konnect-portal-dcr-keycloak`
-  - FUNCTION_NAME: `konnect-portal-dcr-keycloak`
+  - Environment called `dev` with those variables:
+    - AWS_ROLE_NAME: `<function_arn-to-be-replaced>` (example: `arn:aws:lambda:eu-west-3:162225303348:function:konnect-portal-dcr-keycloak`)
+    - BUCKET_NAME: `konnect-portal-dcr-keycloak`
+    - FUNCTION_NAME: `konnect-portal-dcr-keycloak`
 ![Alt text](/images/5-Github-Environment-secrets.png?raw=true "GitHub - Environment secrets")
 - Connect to AWS cli (for the `self-hosted` runner)
 ```sh
