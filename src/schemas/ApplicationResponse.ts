@@ -8,7 +8,7 @@ export interface ApplicationResponse {
   /**
    * Secret of the application, this is used for the application to make
    * calls to the IDP and verify its identity. Konnect doesn't store this
-   * data, if the secret is lost user should refresh the secret.
+   * data, if the secret is lost user should refresh the secret. 
    *
    */
   client_secret: string
