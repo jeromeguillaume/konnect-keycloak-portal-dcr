@@ -1,3 +1,18 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: sec-konnect-keycloak-portal-dcr
+  labels:
+    app: konnect-portal-dcr-keycloak
+type: Opaque
+stringData:
+  KEYCLOAK_CR_INITIAL_AT: "<initial_at-to-be-replaced>"
+  KEYCLOAK_CLIENT_ID: "kong-sa"
+  KEYCLOAK_CLIENT_SECRET: "<kong-sa-client_secret-to-be-replaced>"
+  KEYCLOAK_DOMAIN: "<keycloak-domain-to-be-replaced>"
+  KONG_API_TOKENS: "<your_Konnect_API_Key_value>"
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
