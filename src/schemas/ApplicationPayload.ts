@@ -35,8 +35,8 @@ export const ApplicationPayloadSchema = {
     },
     portal_id: {
       oneOf: [
-        { type: 'string', format: 'uuid' },
-        { type: 'string', const: 'test portal_id' }
+        { type: 'string', format: 'uuid' }/*,
+        { type: 'string', const: 'test portal_id' }*/
       ]
     },
     organization_id: {
