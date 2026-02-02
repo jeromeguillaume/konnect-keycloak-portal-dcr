@@ -39,6 +39,8 @@ export function DCRHandlers (fastify: FastifyInstance, _: RegisterOptions, next:
       const grantTypes: string[] = []
       const responseTypes: string[] = []
 
+      console.log("Request from Konnect, url='%s /%s', headers=%j, body=%j", request.method, request.url, request.headers, request.body)
+
       if (request.body.grant_types.includes('client_credentials') || request.body.grant_types.includes('bearer')) {
         grantTypes.push('client_credentials')
         responseTypes.push('token')
