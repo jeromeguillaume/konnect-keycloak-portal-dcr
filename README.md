@@ -93,7 +93,7 @@ See the Bridge Function URL related to `<Bridge_Function_url-to-be-replaced>` (h
 ```
 cd konnect-keycloak-portal-dcr
 docker buildx create --use --platform=linux/amd64,linux/arm64 --name multi-platform-builder
-docker buildx build --push --platform linux/amd64,linux/arm64 --tag jeromeguillaume/konnect-keycloak-portal-dcr:1.1 .
+docker buildx build --push --platform linux/amd64,linux/arm64 --tag jeromeguillaume/konnect-keycloak-portal-dcr:1.2 .
 ```
 
 ## Optional: test locally the HTTP DCR Bridge
@@ -140,7 +140,7 @@ docker run -p 3000:3000 -d \
 -e "KEYCLOAK_CLIENT_SECRET=<kong-sa-client_secret-to-be-replaced>" \
 -e "KEYCLOAK_DOMAIN=<keycloak-domain-to-be-replaced>" \
 -e "KONG_API_TOKENS=<your_Konnect_API_Key_value>" \
-jeromeguillaume/konnect-keycloak-portal-dcr:1.1
+jeromeguillaume/konnect-keycloak-portal-dcr:1.2
 ```
 
 2) Create a new Application
