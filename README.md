@@ -154,7 +154,7 @@ Install Yarn [^1.22.x](https://classic.yarnpkg.com/lang/en/docs/install)
 ![Alt text](/images/4-AWS-S3-bucket.png?raw=true "AWS S3 bucket")
 
 ### Optional: test locally the HTTP DCR Bridge
-if you don't want to test locally the Bridge you can skip this section and go to [Deploy the bridge on AWS Lambda Function](#Deploy_the_bridge_on_AWS_Lambda_Function)
+if you don't want to test locally the Bridge you can skip this section and go to [Deploy the bridge on AWS Lambda function](#deploy-the-bridge-on-aws-lambda-function)
 
 The fastify server is started by default on port 3000
 
@@ -264,7 +264,7 @@ docker buildx build --push --platform linux/amd64,linux/arm64 --tag jeromeguilla
 ```
 
 ### Optional: test locally the HTTP DCR Bridge
-if you don't want to test locally the Bridge you can skip this section and go to [Deploy the HTTP DCR Bridge](#deploy-the-http-dcr-bridge)
+if you don't want to test locally the Bridge you can skip this section and go to [Deploy the HTTP DCR Bridge](#deploy-the-bridge-on-kubernetes--openshift-with-the-docker-image)
 
 The fastify server is started by default on port 3000
 
@@ -363,7 +363,7 @@ First deploy a Gateway Service then configure the new DCR provider and finally p
 
 4) Select Catalog and APIs menu, click on `+ New API` and configure with:
     - API Spec = [httpbin.apim.eu.json](/httpbinOAS/httpbin.apim.eu.json)
-    
+
 ![Alt text](/images/4c-Konnect-New-API.png?raw=true "Konnect Dev Portal configuration - New API Product")
 
 **Click on Create**
