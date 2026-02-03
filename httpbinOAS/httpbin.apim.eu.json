@@ -1,0 +1,225 @@
+{
+    "openapi": "3.1.0",
+    "servers": [
+      {
+        "url": "https://httpbin.apim.eu"
+      }
+    ],
+    "info": {
+      "contact": {
+        "email": "me@kennethreitz.org",
+        "url": "https://kennethreitz.org",
+        "name": "Kenneth Reitz"
+      },
+      "description": "Httpbin",
+      "title": "Httpbin based on httpbin.org",
+      "version": "1.0.0"
+    },
+    "paths": {
+      "/httpbin/uuid": {
+        "get": {
+          "description": "Generate and get an UUID",
+          "operationId": "get_uuid",
+          "responses": {
+            "200": {
+              "description": "A UUID4."
+            }
+          },
+          "summary": "Return a UUID4.",
+          "tags": [
+            "Generate UUID"
+          ]
+        }
+      },
+      "/httpbin/anything": {
+        "get": {
+          "description": "returns all your request",
+          "operationId": "anything-GET",
+          "responses": {
+            "200": {
+              "description": "The anything endpoint"
+            }
+          },
+          "summary": "Return anything data.",
+          "tags": [
+            "Anything"
+          ]
+        },
+        "post": {
+          "description": "returns all your request",
+          "operationId": "anything-POST",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                    "required": ["client", "phone"],
+                    "properties": {
+                      "client": {
+                        "type": "string",
+                        "example": "my client"
+                      },
+                      "phone": {
+                        "type": "string",
+                        "example": "+330102030405"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+          "responses": {
+            "200": {
+              "description": "The anything endpoint"
+            }
+          },
+          "summary": "Return anything data.",
+          "tags": [
+            "Anything"
+          ]
+        }
+      },
+      "/httpbin/anything/query": {
+        "get": {
+          "description": "returns all your query parameters",
+          "operationId": "query",
+          "parameters": [
+            {
+              "in": "query",
+              "name": "exampleParam",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "minimum": 5,
+                "maximum": 25
+              },
+              "description": "A value between 5 and 25"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "The anything endpoint but with limitation on query"
+            }
+          },
+          "summary": "Return anything data.",
+          "tags": [
+            "Anything",
+            "Query"
+          ]
+        }
+      },
+      "/httpbin/delay/{delay_value}": {
+        "get": {
+          "description": "delay a responses by a defined number of secondes",
+          "operationId": "delay",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "delay_value",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10
+              },
+              "description": "The delay in seconds"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Returns a delayed response"
+            }
+          },
+          "summary": "Returns a delayed response (max of 10 seconds).",
+          "tags": [
+            "Delayed Response",
+            "Path"
+          ]
+        }
+      },
+      "/httpbin/status/{codes}": {
+        "get": {
+          "description": "returns a http status code",
+          "operationId": "status_code",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "codes",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "minimum": 200,
+                "maximum": 599
+              },
+              "description": "The HTTP status code (200-599)"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success"
+            },
+            "300": {
+              "description": "Redirection"
+            },
+            "400": {
+              "description": "Client errors"
+            },
+            "500": {
+              "description": "Server errors"
+            }
+          },
+          "summary": "Return status code or random status code if more than one are given",
+          "tags": [
+            "Status Codes",
+            "Path"
+          ]
+        }
+      }
+    },
+    "tags": [
+      {
+        "description": "Creates a random UUID and returns it in a JSON structure",
+        "name": "Generate UUID"
+      },
+      {
+        "name": "Anything"
+      },
+      {
+        "name": "Query"
+      },
+      {
+        "name": "CatOrDog"
+      },
+      {
+        "name": "Body"
+      },
+      {
+        "name": "Delayed Response"
+      },
+      {
+        "name": "Path"
+      },
+      {
+        "name": "Status Codes"
+      }
+    ],
+    "components": {
+      "securitySchemes": {
+        "basicAuth": {
+          "type": "http",
+          "scheme": "basic"
+        },
+        "ApiKeyAuth" : {
+          "type": "apiKey",
+          "in": "header",
+          "name": "apikey"
+        }
+      }
+    },
+    "security": [
+      {
+        "basicAuth": [],
+        "ApiKeyAuth": []
+      }
+    ]
+  }

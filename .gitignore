@@ -21,3 +21,6 @@ yarn-error.log*
 dist
 .gitignore
 start-bridge-docker.sh
+
+# Secret
+export_deck_env.sh

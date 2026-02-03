@@ -1,0 +1,224 @@
+_format_version: "3.0"
+
+consumers:
+- username: kong-dcr-keycloak
+  keyauth_credentials:
+  - key: ${{ env "DECK_KONG_API_TOKENS" }}
+    tags:
+      - keycloak-dcr
+  tags:
+      - keycloak-dcr
+    
+services:
+  - name: keycloak-dcr
+    url: ${{ env "DECK_KEYCLOAK_DOMAIN" }}
+    retries: 3
+    connect_timeout: 60000
+    write_timeout: 60000
+    read_timeout: 60000
+    plugins:
+      - name: key-auth
+        config:
+          key_names:
+            - x-api-key
+        tags:
+        - keycloak-dcr
+    tags:
+    - keycloak-dcr
+
+    routes:
+      # Route 1: Create Application
+      - name: keycloak-dcr-create-application
+        paths:
+          - /dcr/keycloak
+        methods:
+          - POST
+        strip_path: true  
+        tags:
+          - keycloak-dcr
+   
+        plugins:
+          - name: jq
+            config:
+              request_jq_program: |
+                {
+                  client_name: .client_name,
+                  redirect_uris: (if .redirect_uris | type == "string" then [.redirect_uris] else (.redirect_uris // []) end),
+                  grant_types: (.grant_types // ["authorization_code"]),
+                  response_types: ["code", "id_token", "token"],
+                  application_type: "service"
+                }
+            tags:
+              - keycloak-dcr
+          - name: request-transformer-advanced
+            config:
+              add:
+                headers:
+                  - Authorization:"Bearer ${{ env "DECK_KEYCLOAK_CR_INITIAL_AT" }}"
+              replace:
+                uri: "/auth/realms/${{ env "DECK_KEYCLOAK_REALM" }}/clients-registrations/openid-connect"
+            tags:
+              - keycloak-dcr
+
+      # Route 2: Delete Application
+      - name: keycloak-dcr-delete-application
+        paths:
+          - ~/dcr/keycloak/(?<application_id>[^/]+)$
+        methods:
+          - DELETE
+        strip_path: true
+        tags:
+          - keycloak-dcr
+
+        plugins:
+          - name: datakit
+            config:
+              debug: true
+              nodes:
+              - name: STATIC_INPUTS
+                values:
+                  body: grant_type=client_credentials
+                  client_id: ${{ env "DECK_KEYCLOAK_CLIENT_ID" }}
+                  client_secret: ${{ env "DECK_KEYCLOAK_CLIENT_SECRET" }}
+                type: static
+              - name: CONVERT_HEADER_BASE64
+                jq: |-
+                  {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    Authorization: ("Basic " + (.client_id + ":" + .client_secret |@base64))
+                  }
+                type: jq
+                inputs:
+                  client_id: STATIC_INPUTS.client_id
+                  client_secret: STATIC_INPUTS.client_secret
+              - name: AUTH_REQUEST
+                method: POST
+                ssl_server_name: null
+                ssl_verify: null
+                timeout: 0
+                url: https://sso.apim.eu:8443/auth/realms/Jerome/protocol/openid-connect/token
+                type: call
+                inputs:
+                  body: STATIC_INPUTS.body
+                  headers: CONVERT_HEADER_BASE64
+              - name: UPSTREAM_AUTH_HEADER
+                jq: |
+                  {
+                    Authorization: ("Bearer " + .access_token)
+                  }
+                type: jq
+                input: AUTH_REQUEST.body
+                output: service_request.headers
+            protocols:
+            - grpc
+            - grpcs
+            - http
+            - https
+            tags:
+            - keycloak-dcr
+          - name: request-transformer-advanced
+            config:
+              replace:
+                uri: "/auth/realms/${{ env "DECK_KEYCLOAK_REALM" }}/clients-registrations/default/$(uri_captures['application_id'])"
+            tags:
+              - keycloak-dcr
+
+      # Route 3: Event Hook
+      - name: keycloak-dcr-event-hook
+        paths:
+          - ~/dcr/keycloak/(?<application_id>[^/]+)/event-hook$
+        methods:
+          - POST
+        strip_path: true
+        tags:
+          - keycloak-dcr
+
+        plugins:
+          - name: request-termination
+            config:
+              status_code: 200
+              content_type: application/json
+              body: '{"message":"Event received"}'
+            tags:
+              - keycloak-dcr
+  
+      # Route 4: Refresh Client Secret
+      - name: keycloak-dcr-refresh-client-secret
+        paths:
+          - ~/dcr/keycloak/(?<application_id>[^/]+)/new-secret$
+        methods:
+          - POST
+        strip_path: true
+        tags:
+          - keycloak-dcr
+
+        plugins:
+          - name: datakit
+            config:
+              debug: true
+              nodes:
+              - name: STATIC_INPUTS
+                type: static
+                values:
+                  client_id: ${{ env "DECK_KEYCLOAK_CLIENT_ID" }}
+                  client_secret: ${{ env "DECK_KEYCLOAK_CLIENT_SECRET" }}
+                  body: grant_type=client_credentials
+              - name: CONVERT_HEADER_BASE64
+                jq: |-
+                  {
+                    "Content-Type": ("application/x-www-form-urlencoded"),
+                    Authorization: ("Basic " + (.client_id + ":" + .client_secret |@base64))
+                  }
+                type: jq
+                inputs:
+                  client_id: STATIC_INPUTS.client_id
+                  client_secret: STATIC_INPUTS.client_secret
+              - name: AUTH_REQUEST
+                type: call
+                inputs:
+                  body: STATIC_INPUTS.body
+                  headers: CONVERT_HEADER_BASE64
+                url: ${{ env "DECK_KEYCLOAK_DOMAIN" }}/auth/realms/${{ env "DECK_KEYCLOAK_REALM" }}/protocol/openid-connect/token
+                method: POST
+              - name: UPSTREAM_AUTH_HEADER
+                type: jq
+                input: AUTH_REQUEST.body
+                output: service_request.headers
+                jq: |
+                  {
+                    Authorization: ("Bearer " + .access_token)
+                  }
+            tags:
+              - keycloak-dcr
+
+          - name: request-transformer-advanced
+            config:
+              replace:
+                uri: "/auth/admin/realms/${{ env "DECK_KEYCLOAK_REALM" }}/clients/$(uri_captures['application_id'])/client-secret"                
+            tags:
+              - keycloak-dcr
+
+          - name: post-function
+            config:
+              header_filter:
+                - |
+                  -- clear Content-Length so the new body size is valid
+                  kong.response.clear_header("Content-Length")
+              body_filter:
+                - |
+                  local body = kong.response.get_raw_body()
+                  
+                  if body then
+                    local uri = kong.request.get_path()
+                    local app_id = uri:match("/dcr/keycloak/([^/]+)/new%-secret$")
+                    
+                    -- Extract value from JSON using string matching
+                    local secret = body:match('"value"%s*:%s*"([^"]+)"')
+                    
+                    if secret and app_id then
+                      local new_body = '{"client_id":"' .. app_id .. '","client_secret":"' .. secret .. '"}'
+                      kong.response.set_raw_body(new_body)
+                    end
+                  end
+            tags:
+              - keycloak-dcr
