@@ -59,13 +59,13 @@ Git clone this repository
 git clone https://github.com/jeromeguillaume/konnect-keycloak-portal-dcr.git
 ```
 
-#### Deploy a Kong Gateway
-Choose a type of Kong Gateway and deploy it:
+#### Choose a Kong Gateway deployment
+Choose a type of Kong Gateway from this list:
 1) Serverless: [Doc](https://developer.konghq.com/gateway/topology-hosting-options/#serverless-gateways)
 2) Dedicated Cloud Gateway: [Doc](https://developer.konghq.com/gateway/topology-hosting-options/#dedicated-cloud-gateways)
 3) Self-hosted: [Doc](https://developer.konghq.com/gateway/install/)
 
-Select the best option in regards your technical environment. For the rest of the document we use a Serverless Kong Gateway
+Select the best option in regards your technical environment. The Gateway self-hosted deployment needs to be reachable by Konnect by using a public IP or public FQDN. For the rest of the document **we use a Serverless Kong Gateway**
 
 #### Install decK
 See installation [doc](https://developer.konghq.com/deck/?tab=windows#install-deck)
@@ -99,7 +99,7 @@ See installation [doc](https://developer.konghq.com/deck/?tab=windows#install-de
     - Get the proxy URL of the Serverless Gateway:
       - Select the `API Gateway` / `Gateways` menu
       - Copy your Proxy URL (for example: `https://kong-85c543c6b2euehaj7.kongcloud.dev`)
-      - Add `/dcr/keycloak` to the bridge path. So for instance `<Bridge_Function_url-to-be-replaced>` is `https://kong-85c543c6b2euehaj7.kongcloud.dev/dcr/keycloak`
+      - Add `/dcr/keycloak` to your bridge path. So for instance, the Bridge Function URL related to `<Bridge_Function_url-to-be-replaced>` is `https://kong-85c543c6b2euehaj7.kongcloud.dev/dcr/keycloak`
 
     
 ## AWS Lambda (as an HTTP DCR Bridge)
@@ -326,45 +326,44 @@ First deploy a Gateway Service then configure the new DCR provider and finally p
 3) Select the `API Gateway` / `Gateways` menu
 4) Select your Gateway or Create a new Gateway
 5) Create a new `httpbin` Gateway Service with:
-  - Name = `httpbin`
-  - Upstream URL = `http://httpbin.apim.eu`
+    - Name = `httpbin`
+    - Upstream URL = `http://httpbin.apim.eu`
 
 **Click on Save**
 
 5) Create a new `httpbin` Route to the Gateway Service with:
-  - Name = `httpbin`
-  - Path = `/httpbin`
+    - Name = `httpbin`
+    - Path = `/httpbin`
 
 **Click on Save**
 
 ### Konnect Dev Portal configuration
 1) Login to [konnect](https://cloud.konghq.com)
 2) Select Dev Portal / Application Auth menu, select DCR Providers tab, click on `+ New DCR Provider` and configure with:
-  - Name = `DCR Keycloak`
-  - Issuer URL = `<keycloak-domain-to-be-replaced>`
-  - Provider Type = `HTTP`
-  - DCR Base URL = `<Bridge_Function_url-to-be-replaced>`
-  - API Key = `<your_Konnect_API_Key_value>` - Put the same value defined before
+    - Name = `DCR Keycloak`
+    - Issuer URL = `<keycloak-domain-to-be-replaced>`
+    - Provider Type = `HTTP`
+    - DCR Base URL = `<Bridge_Function_url-to-be-replaced>`
+    - API Key = `<your_Konnect_API_Key_value>` - Put the same value defined before
   
 **Click on Save**
 ![Alt text](/images/4a-Konnect-New-DCR-Provider.png?raw=true "Konnect Dev Portal configuration - New DCR Provider")
 
 3) Select Dev Portal / Application Auth menu, click on `+ New Auth Strategy` and configure with:
-  - Name = `Auth DCR Keycloak`
-  - Display Name = `Auth DCR Keycloak`
-  - Auth Type = `DCR`
-  - DCR Provider = `DCR Keycloak`
-  - Scopes = `openid`
-  - Credential Claims = `clientId`
-  - Auth Method = `bearer` and `client_credentials`
-    
-**Click on Save**
+    - Name = `Auth DCR Keycloak`
+    - Display Name = `Auth DCR Keycloak`
+    - Auth Type = `DCR`
+    - DCR Provider = `DCR Keycloak`
+    - Scopes = `openid`
+    - Credential Claims = `clientId`
+    - Auth Method = `bearer` and `client_credentials`
 
+    **Click on Save**
 ![Alt text](/images/4b-Konnect-New-Auth.png?raw=true "Konnect Dev Portal configuration - New Auth Strategy")
 
 4) Select Catalog and APIs menu, click on `+ New API` and configure with:
-  - API Spec = [httpbin.apim.eu.json](/httpbinOAS/httpbin.apim.eu.json)
-
+    - API Spec = [httpbin.apim.eu.json](/httpbinOAS/httpbin.apim.eu.json)
+    
 ![Alt text](/images/4c-Konnect-New-API.png?raw=true "Konnect Dev Portal configuration - New API Product")
 
 **Click on Create**
