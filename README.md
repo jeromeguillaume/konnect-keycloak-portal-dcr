@@ -96,10 +96,10 @@ See installation [doc](https://developer.konghq.com/deck/?tab=windows#install-de
     deck gateway sync --konnect-token $KONNECT_TOKEN --konnect-addr https://eu.api.konghq.com --konnect-control-plane-name "DCR Bridge" --select-tag keycloak-dcr kong-keycloak-dcr.yaml
     ```
   6) Get the `<Bridge_Function_url-to-be-replaced>` used below in the document:  
-    - Get the proxy URL of the Serverless Gateway:
-      - Select the `API Gateway` / `Gateways` menu
-      - Copy your Proxy URL (for example: `https://kong-85c543c6b2euehaj7.kongcloud.dev`)
-      - Add `/dcr/keycloak` to your bridge path. So for instance, the Bridge Function URL related to `<Bridge_Function_url-to-be-replaced>` is `https://kong-85c543c6b2euehaj7.kongcloud.dev/dcr/keycloak`
+      - Get the proxy URL of the Serverless Gateway:
+        - Select the `API Gateway` / `Gateways` menu
+        - Copy your Proxy URL (for example: `https://kong-85c543c6b2euehaj7.kongcloud.dev`)
+        - Add `/dcr/keycloak` to your bridge path. So for instance, the Bridge Function URL related to `<Bridge_Function_url-to-be-replaced>` is `https://kong-85c543c6b2euehaj7.kongcloud.dev/dcr/keycloak`
 
     
 ## AWS Lambda (as an HTTP DCR Bridge)
