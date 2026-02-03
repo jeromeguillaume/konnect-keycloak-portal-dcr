@@ -86,7 +86,7 @@ See installation [doc](https://developer.konghq.com/deck/?tab=windows#install-de
     export DECK_KEYCLOAK_CR_INITIAL_AT=<initial_at-to-be-replaced> #see step#1 - Keycloak configuration
     export DECK_KEYCLOAK_CLIENT_ID=kong-sa
     export DECK_KEYCLOAK_CLIENT_SECRET=<kong-sa-client_secret-to-be-replaced>
-    export DECK_KEYCLOAK_REALM=<realm_to_be_replaced> # Example: Jerome
+    export DECK_KEYCLOAK_REALM=<keycloak_realm_to_be_replaced> # Example: Jerome
     export DECK_KEYCLOAK_DOMAIN=<keyclocak_domain_to_be_replaced>   # Example: https://sso.apim.eu:8443 (without /auth/realms/Jerome/)
     export DECK_KONG_API_TOKENS=<your_Konnect_API_Key_value>
     ```
@@ -95,7 +95,7 @@ See installation [doc](https://developer.konghq.com/deck/?tab=windows#install-de
     cd ./kong-gw
     deck gateway sync --konnect-token $KONNECT_TOKEN --konnect-addr https://eu.api.konghq.com --konnect-control-plane-name "DCR Bridge" --select-tag keycloak-dcr kong-keycloak-dcr.yaml
     ```
-  6) Get the `<Bridge_Function_url-to-be-replaced>` used below in the document
+  6) Get the `<Bridge_Function_url-to-be-replaced>` used below in the document:  
     - Get the proxy URL of the Serverless Gateway:
       - Select the `API Gateway` / `Gateways` menu
       - Copy your Proxy URL (for example: `https://kong-85c543c6b2euehaj7.kongcloud.dev`)
