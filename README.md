@@ -370,7 +370,8 @@ First deploy a Gateway Service then configure the new DCR provider and finally p
 4) Verify your DCR configuration
     - select DCR Providers tab
     - open `DCR Keycloak`
-    **Click on Verify**`
+    
+    **Click on Verify**
 ![Alt text](/images/13-DCR-Provider-Verify.png?raw=true "Konnect Dev Portal configuration - Verify")
 
 5) Select Catalog and APIs menu, click on `+ New API` and configure with:
