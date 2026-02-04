@@ -20,11 +20,15 @@ Select the best option in regards your technical environment
 6. [Konnect configuration](#konnect-configuration)
 7. [Test the Bridge from Konnect Dev Portal](#test-the-bridge-from-konnect-dev-portal)
 8. [Other material](#other-material)
+9. [Credits](#credits)
 
 ## Prerequisites for all deployments
 
 ### Httpie
 Install [Httpie](https://httpie.io/cli)
+
+### Key for Konnect and HTTP DCR bridge
+Prepare a random and strong key that is used by Konnect to authenticate with the HTTP DCR bridge. In the rest of the document this key is refered to as `your_Konnect_API_Key_value`
 
 ### Keycloak configuration
 1) Create an `Initial Access Token` for managing (from Konnect Dev Portal) the Application creation and **store the Initial AT**
@@ -83,7 +87,7 @@ See installation [doc](https://developer.konghq.com/deck/?tab=windows#install-de
     - Open a termninal
     - Set the environment variables:
     ```shell
-    export DECK_KEYCLOAK_CR_INITIAL_AT=<initial_at-to-be-replaced> #see step#1 - Keycloak configuration
+    export DECK_KEYCLOAK_CR_INITIAL_AT=<initial_at-to-be-replaced> # see Keycloak prerequisites
     export DECK_KEYCLOAK_CLIENT_ID=kong-sa
     export DECK_KEYCLOAK_CLIENT_SECRET=<kong-sa-client_secret-to-be-replaced>
     export DECK_KEYCLOAK_REALM=<keycloak_realm_to_be_replaced> # Example: Jerome
@@ -95,13 +99,15 @@ See installation [doc](https://developer.konghq.com/deck/?tab=windows#install-de
     cd ./kong-gw
     deck gateway sync --konnect-token $KONNECT_TOKEN --konnect-addr https://eu.api.konghq.com --konnect-control-plane-name "DCR Bridge" --select-tag keycloak-dcr kong-keycloak-dcr.yaml
     ```
-  6) Get the `<Bridge_Function_url-to-be-replaced>` used below in the document:  
+6) Get the `<Bridge_Function_url-to-be-replaced>` used below in the document:  
       - Get the proxy URL of the Serverless Gateway:
         - Select the `API Gateway` / `Gateways` menu
         - Copy your Proxy URL (for example: `https://kong-85c543c6b2euehaj7.kongcloud.dev`)
         - Add `/dcr/keycloak` to your bridge path. So for instance, the Bridge Function URL related to `<Bridge_Function_url-to-be-replaced>` is `https://kong-85c543c6b2euehaj7.kongcloud.dev/dcr/keycloak`
 
-    
+The expected result in Konnect is as follows. There are 4 routes: Create application, Refresh secret, Delete application and Webhook
+![Alt text](/images/14-DCR-Bridge-Kong-routes.png?raw=true "DCR Bride - Kong routes")
+
 ## AWS Lambda (as an HTTP DCR Bridge)
 
 ### Prerequisites
@@ -138,9 +144,9 @@ Install Yarn [^1.22.x](https://classic.yarnpkg.com/lang/en/docs/install)
     - Open `Configuration`/`Environment variables` and Edit:
       - KEYCLOAK_CLIENT_ID = `kong-sa`
       - KEYCLOAK_CLIENT_SECRET = `<kong-sa-client_secret-to-be-replaced>`
-      - KEYCLOAK_CR_INITIAL_AT = `<initial_at-to-be-replaced>` (see step#1 - Keycloak configuration)
+      - KEYCLOAK_CR_INITIAL_AT = `<initial_at-to-be-replaced>` (see Keycloak prerequisites)
       - KEYCLOAK_DOMAIN = `<keycloak-domain-to-be-replaced>` (example: https://sso.apim.eu:8443/auth/realms/Jerome/)
-      - KONG_API_TOKENS = `<your_Konnect_API_Key_value>` Put a random strong key value
+      - KONG_API_TOKENS = `<your_Konnect_API_Key_value>`
 
     **Click on Save**
 
@@ -344,7 +350,7 @@ First deploy a Gateway Service then configure the new DCR provider and finally p
     - Issuer URL = `<keycloak-domain-to-be-replaced>`
     - Provider Type = `HTTP`
     - DCR Base URL = `<Bridge_Function_url-to-be-replaced>`
-    - API Key = `<your_Konnect_API_Key_value>` - Put the same value defined before
+    - API Key = `<your_Konnect_API_Key_value>`
   
 **Click on Save**
 ![Alt text](/images/4a-Konnect-New-DCR-Provider.png?raw=true "Konnect Dev Portal configuration - New DCR Provider")
@@ -361,18 +367,24 @@ First deploy a Gateway Service then configure the new DCR provider and finally p
     **Click on Save**
 ![Alt text](/images/4b-Konnect-New-Auth.png?raw=true "Konnect Dev Portal configuration - New Auth Strategy")
 
-4) Select Catalog and APIs menu, click on `+ New API` and configure with:
+4) Verify your DCR configuration
+    - select DCR Providers tab
+    - open `DCR Keycloak`
+    **Click on Verify**`
+![Alt text](/images/13-DCR-Provider-Verify.png?raw=true "Konnect Dev Portal configuration - Verify")
+
+5) Select Catalog and APIs menu, click on `+ New API` and configure with:
     - API Spec = [httpbin.apim.eu.json](/httpbinOAS/httpbin.apim.eu.json)
 
 ![Alt text](/images/4c-Konnect-New-API.png?raw=true "Konnect Dev Portal configuration - New API Product")
 
 **Click on Create**
 
-5) Click on `Link a gateway service`
+6) Click on `Link a gateway service`
 
 **Click on Save**
 
-6) Click on `Publish to a Portal`
+7) Click on `Publish to a Portal`
 
 ![Alt text](/images/4d-Konnect-App-Registration.png?raw=true "Konnect Dev Portal configuration - Edit App Registration")
 **Click on Publish API**
@@ -429,3 +441,6 @@ HTTP/1.1 200 OK
 
 ## Other material
 see in [notes.txt](notes.txt) example of commands to call directly Keycloak APIs
+
+## Credits
+Thanks to `Kong Gateway plugins` built by Chris Gough

@@ -3,19 +3,19 @@
 #############################################################
 # 1 - Create a new CLIENT
 # Get Realm Settings/Client Registration/Initial Access Tokens
-http POST https://sso.apim.eu:8443/auth/realms/Jerome/clients-registrations/openid-connect client_name=my-app1 Authorization:' Bearer INITIAL_ACCESS_TOKEN_TO-BE-REPLACED'
+http POST https://sso.apim.eu:8443/auth/realms/Jerome/clients-registrations/openid-connect client_name=my-app1 Authorization:'Bearer INITIAL_ACCESS_TOKEN_TO-BE-REPLACED'
 
 # 2 - REFRESH the CLIENT_SECRET of a CLIENT
 # Get Access token
-See above
+See below
 # REFRESH the CLIENT_SECRET
-http -f POST https://sso.apim.eu:8443/auth/admin/realms/Jerome/clients/CLIENT_ID_TO-BE-REPLACED/client-secret Authorization:' Bearer ACCESS_TOKEN_TO-BE-REPLACED'
+http -f POST https://sso.apim.eu:8443/auth/admin/realms/Jerome/clients/CLIENT_ID_TO-BE-REPLACED/client-secret Content-Type:application/json Authorization:'Bearer ACCESS_TOKEN_TO-BE-REPLACED'
 
 # 3 - DELETE a CLIENT
 # Get Access token
-http -f -a kong-sa:JJDH69SR88ubsajvsCPABgwfXjwCI5pD POST https://sso.apim.eu:8443/auth/realms/Jerome/protocol/openid-connect/token grant_type=client_credentials
+http -f -a kong-sa:5tgC1HzgNWyWguMTFXsoEd3ASjcKia5j POST https://sso.apim.eu:8443/auth/realms/Jerome/protocol/openid-connect/token grant_type=client_credentials
 # DELETE a CLIENT
-http  DELETE https://sso.apim.eu:8443/auth/realms/Jerome/clients-registrations/default/CLIENT_ID_TO-BE-REPLACED Authorization:' Bearer ACCESS_TOKEN_TO-BE-REPLACED'
+http  DELETE https://sso.apim.eu:8443/auth/realms/Jerome/clients-registrations/default/CLIENT_ID_TO-BE-REPLACED Authorization:'Bearer ACCESS_TOKEN_TO-BE-REPLACED'
 
 # X: 
 # list of 'client's
