@@ -105,7 +105,7 @@ See installation [doc](https://developer.konghq.com/deck/?tab=windows#install-de
         - Copy your Proxy URL (for example: `https://kong-85c543c6b2euehaj7.kongcloud.dev`)
         - Add `/dcr/keycloak` to your bridge path. So for instance, the Bridge Function URL related to `<Bridge_Function_url-to-be-replaced>` is `https://kong-85c543c6b2euehaj7.kongcloud.dev/dcr/keycloak`
 
-The expected result in Konnect is as follows. There are 4 routes: Create application, Refresh secret, Delete application and Webhook
+The expected result in Konnect is as follows. There are 4 routes: Create application, Refresh secret, Delete application and Event Hook
 ![Alt text](/images/14-DCR-Bridge-Kong-routes.png?raw=true "DCR Bride - Kong routes")
 
 ## AWS Lambda (as an HTTP DCR Bridge)
@@ -443,4 +443,4 @@ HTTP/1.1 200 OK
 see in [notes.txt](notes.txt) example of commands to call directly Keycloak APIs
 
 ## Credits
-Thanks to `Kong Gateway plugins` built by Chris Gough
+Thanks to Chris Gough, who designed the `Kong Gateway plugins`
