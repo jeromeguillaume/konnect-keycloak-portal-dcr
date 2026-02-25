@@ -12,6 +12,16 @@ function getAdminDomain(domain: string): string {
 }
 
 /**
+ * Builds an admin API URL by combining the domain with a path
+ * Handles trailing slashes properly to avoid dropping realm names
+ */
+function buildAdminUrl(domain: string, path: string): string {
+  const adminDomain = getAdminDomain(domain).replace(/\/$/, '') // Remove trailing slash if present
+  const cleanPath = path.replace(/^\//, '') // Remove leading slash if present
+  return `${adminDomain}/${cleanPath}`
+}
+
+/**
  * DCRHandlers registers the fastify plugin for Konnect DCR handlers in the fastify instance
  * it implements all the required routes and also protects the endpoints for with the `x-api-key` header
  */
@@ -112,7 +122,7 @@ export function DCRHandlers (fastify: FastifyInstance, _: RegisterOptions, next:
       console.log("Keycloak request, url='POST %s', headers=%j", url, headers)
       // Call the POST '/client-secret' which regenerates the secret
       let response = await fastify.httpClient.post(
-        new URL(url,getAdminDomain(fastify.config.KEYCLOAK_DOMAIN)).toString(),
+        buildAdminUrl(fastify.config.KEYCLOAK_DOMAIN, url),
         {},
         { headers }
       )
@@ -120,9 +130,9 @@ export function DCRHandlers (fastify: FastifyInstance, _: RegisterOptions, next:
 
       // Call the GET '/client-secret' which gets the secret
       url = `clients/${request.params.application_id}/client-secret`
-      console.log("Keycloak request, url='POST %s', headers=%j", url, headers)
+      console.log("Keycloak request, url='GET %s', headers=%j", url, headers)
       response = await fastify.httpClient.get(
-        new URL(url,getAdminDomain(fastify.config.KEYCLOAK_DOMAIN)).toString(),
+        buildAdminUrl(fastify.config.KEYCLOAK_DOMAIN, url),
         { headers }
       )
       console.log("Keycloak response, code=%d, data=%j", response.status, response.data)
