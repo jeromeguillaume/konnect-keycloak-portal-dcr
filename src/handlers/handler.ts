@@ -136,15 +136,13 @@ export function DCRHandlers (fastify: FastifyInstance, _: RegisterOptions, next:
         { headers }
       )
       console.log("Keycloak response, code=%d, data=%j", response.status, response.data)
-      const dateTime = new Date().toISOString();
-      console.log("Keycloak response, dateTime=%s", dateTime)
-
+      
       return reply.code(200).send({
         secret_id: request.params.client_id,
         client_id: request.params.client_id,
         client_secret: response.data.value,
         status: "ACTIVE",
-        created_at: dateTime,
+        created_at: new Date().toISOString(),
         expires_at: null
       })
     }
@@ -177,7 +175,7 @@ export function DCRHandlers (fastify: FastifyInstance, _: RegisterOptions, next:
         secret_id: request.params.client_id,
         client_id: request.params.client_id,
         status: "ACTIVE",
-        created_at: null,
+        created_at: new Date().toISOString(),
         expires_at: null
       }]
 
