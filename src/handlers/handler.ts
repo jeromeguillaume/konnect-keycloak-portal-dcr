@@ -159,16 +159,16 @@ export function DCRHandlers (fastify: FastifyInstance, _: RegisterOptions, next:
       const headers = getHeaders(accessToken)
       let url = `clients/${request.params.client_id}/client-secret`
 
-      console.log("Keycloak request, url='POST %s', headers=%j", url, headers)
+      console.log("Keycloak request, url='GET %s', headers=%j", url, headers)
       // Call the GET '/client-secret' which returns the secret
       let response = await fastify.httpClient.get(
         buildAdminUrl(fastify.config.KEYCLOAK_DOMAIN, url),
         { headers }
       )
       console.log("Keycloak response, code=%d, data=%j", response.status, response.data)
- 
-     const secrets = [{
-        secret_id: response.data.id,
+      
+      const secrets = [{
+        secret_id: request.params.client_id,
         client_id: request.params.client_id,
         status: "ACTIVE",
         created_at: null,
