@@ -142,7 +142,7 @@ export function DCRHandlers (fastify: FastifyInstance, _: RegisterOptions, next:
         client_id: request.params.client_id,
         client_secret: response.data.value,
         status: "ACTIVE",
-        created_at: new Date().toISOString(),
+        created_at: null,
         expires_at: null
       })
     }
@@ -175,7 +175,7 @@ export function DCRHandlers (fastify: FastifyInstance, _: RegisterOptions, next:
         secret_id: request.params.client_id,
         client_id: request.params.client_id,
         status: "ACTIVE",
-        created_at: new Date().toISOString(),
+        created_at: null,
         expires_at: null
       }]
 
