@@ -109,10 +109,10 @@ export function DCRHandlers (fastify: FastifyInstance, _: RegisterOptions, next:
   })
 
   //-------------------------------------------------------------------
-  // New Credential of a 'client_id' (like a 'client_secret' rotation)
+  // Refresh Secret
   //-------------------------------------------------------------------
   fastify.route({
-    url: '/:client_id/secrets',
+    url: '/:client_id/new-secret',
     method: 'POST',
     handler: async function (request: FastifyRequest<{ Params: { client_id: string } }>, reply: FastifyReply): Promise<FastifyReply> {
       const accessToken = await getAccessToken(fastify, fastify.config.KEYCLOAK_CLIENT_ID, fastify.config.KEYCLOAK_CLIENT_SECRET)
@@ -138,12 +138,8 @@ export function DCRHandlers (fastify: FastifyInstance, _: RegisterOptions, next:
       console.log("Keycloak response, code=%d, data=%j", response.status, response.data)
       
       return reply.code(200).send({
-        secret_id: request.params.client_id,
         client_id: request.params.client_id,
-        client_secret: response.data.value,
-        status: "ACTIVE",
-        created_at: null,
-        expires_at: null
+        client_secret: response.data.value
       })
     }
   })
@@ -151,37 +147,37 @@ export function DCRHandlers (fastify: FastifyInstance, _: RegisterOptions, next:
   //-----------------------------------------------------------
   // List all secrets
   //-----------------------------------------------------------  
-  fastify.route({
-    url: '/:client_id/secrets',
-    method: 'GET',
-    handler: async function (
-      request: FastifyRequest<{ Params: { client_id: string } }>,
-      reply: FastifyReply
-    ): Promise<FastifyReply> {
-
-      const accessToken = await getAccessToken(fastify, fastify.config.KEYCLOAK_CLIENT_ID, fastify.config.KEYCLOAK_CLIENT_SECRET)
-      const headers = getHeaders(accessToken)
-      let url = `clients/${request.params.client_id}/client-secret`
-
-      console.log("Keycloak request, url='GET %s', headers=%j", url, headers)
-      // Call the GET '/client-secret' which returns the secret
-      let response = await fastify.httpClient.get(
-        buildAdminUrl(fastify.config.KEYCLOAK_DOMAIN, url),
-        { headers }
-      )
-      console.log("Keycloak response, code=%d, data=%j", response.status, response.data)
-      
-      const secrets = [{
-        secret_id: request.params.client_id,
-        client_id: request.params.client_id,
-        status: "ACTIVE",
-        created_at: null,
-        expires_at: null
-      }]
-
-      return reply.code(200).send({ secrets })
-    }
-  })
+//  fastify.route({
+//    url: '/:client_id/secrets',
+//    method: 'GET',
+//    handler: async function (
+//      request: FastifyRequest<{ Params: { client_id: string } }>,
+//      reply: FastifyReply
+//    ): Promise<FastifyReply> {
+//
+//      const accessToken = await getAccessToken(fastify, fastify.config.KEYCLOAK_CLIENT_ID, fastify.config.KEYCLOAK_CLIENT_SECRET)
+//      const headers = getHeaders(accessToken)
+//      let url = `clients/${request.params.client_id}/client-secret`
+//
+//      console.log("Keycloak request, url='GET %s', headers=%j", url, headers)
+//      // Call the GET '/client-secret' which returns the secret
+//      let response = await fastify.httpClient.get(
+//        buildAdminUrl(fastify.config.KEYCLOAK_DOMAIN, url),
+//        { headers }
+//      )
+//      console.log("Keycloak response, code=%d, data=%j", response.status, response.data)
+//      
+//      const secrets = [{
+//        secret_id: request.params.client_id,
+//        client_id: request.params.client_id,
+//        status: "ACTIVE",
+//        created_at: null,
+//        expires_at: null
+//      }]
+//
+//      return reply.code(200).send({ secrets })
+//    }
+//  })
 
   fastify.route({
     url: '/:application_id/event-hook',
