@@ -351,6 +351,7 @@ First deploy a Gateway Service then configure the new DCR provider and finally p
     - Provider Type = `HTTP`
     - DCR Base URL = `<Bridge_Function_url-to-be-replaced>`
     - API Key = `<your_Konnect_API_Key_value>`
+    - Disable `Allow Multiple Credentials`
   
 **Click on Save**
 ![Alt text](/images/4a-Konnect-New-DCR-Provider.png?raw=true "Konnect Dev Portal configuration - New DCR Provider")
@@ -363,7 +364,6 @@ First deploy a Gateway Service then configure the new DCR provider and finally p
     - Scopes = `openid`
     - Credential Claims = `clientId`
     - Auth Method = `bearer` and `client_credentials`
-    - Disable `Allow Multiple Credentials`
 
     **Click on Save**
 ![Alt text](/images/4b-Konnect-New-Auth.png?raw=true "Konnect Dev Portal configuration - New Auth Strategy")
