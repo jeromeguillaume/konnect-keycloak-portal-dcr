@@ -237,6 +237,18 @@ HTTP/1.1 204 No Content
 ```
 Check on Keycloak the deletion of this `client`
 
+### Automated tests
+Unit tests (mocked Keycloak, no Docker required):
+```shell
+npm test
+```
+
+Integration tests against a **live Keycloak** instance. These spin up Keycloak in Docker, provision a `dcr-test` realm and the `kong-sa` service-account client (with the `create-client` role), then drive the real bridge to register several clients in a row — the regression test for the previous Initial Access Token (IAT) exhaustion issue. Requires a running Docker daemon plus `curl` and `jq`:
+```shell
+npm run test:integration
+```
+The harness lives in [test/integration/](test/integration/): `setup-keycloak.sh` provisions Keycloak and prints the bridge environment, `run.sh` ties setup → tests → teardown together, and `teardown-keycloak.sh` removes the container. Set `KEEP_KEYCLOAK=1` to leave the container running between runs. The integration suite skips itself automatically when the live Keycloak environment variables are absent, so `npm test` and CI without Docker are unaffected.
+
 ### Deploy the bridge on AWS Lambda Function
 - The Git Workflow [ci.yml](.github/workflows/ci.yml) pushes the DCR Handler code in the Lambda Function.
 - Prepare and start a `self-hosted` Github Runner: open with the browser your Github repo and select Settings / Actions / Runners and click on `New self-hosted runner` 

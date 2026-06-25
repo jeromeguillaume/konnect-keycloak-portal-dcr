@@ -29,7 +29,8 @@
     "build": "tsc",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
-    "test": "env $(grep -v '^#' .env.test) jest"
+    "test": "env $(grep -v '^#' .env.test) jest",
+    "test:integration": "bash test/integration/run.sh"
   },
   "engines": {
     "node": ">=20",
