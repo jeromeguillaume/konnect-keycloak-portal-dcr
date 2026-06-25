@@ -2,5 +2,8 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  testRegex: '.test.ts$'
+  // Unit tests only. The live-Keycloak integration tests (`*.it.test.ts`) are
+  // excluded here and run via `npm run test:integration` (jest.integration.config.js).
+  testRegex: '.test.ts$',
+  testPathIgnorePatterns: ['/node_modules/', '\\.it\\.test\\.ts$']
 };
