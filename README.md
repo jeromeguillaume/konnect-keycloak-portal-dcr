@@ -31,10 +31,10 @@ Install [Httpie](https://httpie.io/cli)
 Prepare a random and strong key that is used by Konnect to authenticate with the HTTP DCR bridge. In the rest of the document this key is refered to as `your_Konnect_API_Key_value`
 
 ### Keycloak configuration
-1) Create an `Initial Access Token` for managing (from Konnect Dev Portal) the Application creation and **store the Initial AT**
-![Alt text](/images/1-keycloak-Client-Registration-Initial-AT.png?raw=true "Client Registration Initial Access Token")
+1) Create a `client`, called it for instance `kong-sa`, for managing (from Konnect Dev Portal) the application creation, the application deletion and the refresh token action.
 
-2) Create a `client`, called it for instance `kong-sa`, for managing (from Konnect Dev Portal) the application  deletion and the refresh token action. 
+> **Note:** earlier versions of this bridge used a Client Registration `Initial Access Token` (IAT) for the application creation. An IAT is a *consumable* bootstrap credential: Keycloak decrements its **Count** on every registration and it stops working once the count is exhausted or it expires, returning `401 Unauthorized`. The bridge now mints a short-lived service-account token from the `kong-sa` client (which holds the `create-client` role) for **every** call, so no IAT is required and there is nothing to expire.
+
 The properties are:
   - Client Protocol = `openid-connect`
   - Access Type = `confidential`
@@ -44,7 +44,7 @@ The properties are:
 
 **Click on Save**
 
-3) Open the `kong-sa` client, select `Service Account Roles` tab, select in `Client Roles` the `realm-management` and assign roles: 
+2) Open the `kong-sa` client, select `Service Account Roles` tab, select in `Client Roles` the `realm-management` and assign roles: 
       - `create-client`, 
       - `manage-clients`,
       - `query-clients`, 
@@ -87,7 +87,6 @@ See installation [doc](https://developer.konghq.com/deck/?tab=windows#install-de
     - Open a termninal
     - Set the environment variables:
     ```shell
-    export DECK_KEYCLOAK_CR_INITIAL_AT=<initial_at-to-be-replaced> # see Keycloak prerequisites
     export DECK_KEYCLOAK_CLIENT_ID=kong-sa
     export DECK_KEYCLOAK_CLIENT_SECRET=<kong-sa-client_secret-to-be-replaced>
     export DECK_KEYCLOAK_REALM=<keycloak_realm_to_be_replaced> # Example: Jerome
@@ -144,7 +143,6 @@ Install Yarn [^1.22.x](https://classic.yarnpkg.com/lang/en/docs/install)
     - Open `Configuration`/`Environment variables` and Edit:
       - KEYCLOAK_CLIENT_ID = `kong-sa`
       - KEYCLOAK_CLIENT_SECRET = `<kong-sa-client_secret-to-be-replaced>`
-      - KEYCLOAK_CR_INITIAL_AT = `<initial_at-to-be-replaced>` (see Keycloak prerequisites)
       - KEYCLOAK_DOMAIN = `<keycloak-domain-to-be-replaced>` (example: https://sso.apim.eu:8443/auth/realms/Jerome/)
       - KONG_API_TOKENS = `<your_Konnect_API_Key_value>`
 
@@ -172,7 +170,6 @@ yarn install --frozen-lockfile
 
 2) Create an `.env` file at the root of this project, get the following content and **replace the strings enclosed by < >**:
 ```shell
-KEYCLOAK_CR_INITIAL_AT=<initial_at-to-be-replaced>
 KEYCLOAK_CLIENT_ID=kong-sa
 KEYCLOAK_CLIENT_SECRET=<kong-sa-client_secret-to-be-replaced>
 # example: https://sso.apim.eu:8443/auth/realms/Jerome/
@@ -283,7 +280,6 @@ The fastify server is started by default on port 3000
 docker run -p 3000:3000 -d \
 --name konnect-keycloak-portal-dcr \
 --platform linux/amd64 \
--e "KEYCLOAK_CR_INITIAL_AT=<initial_at-to-be-replaced>" \
 -e "KEYCLOAK_CLIENT_ID=kong-sa" \
 -e "KEYCLOAK_CLIENT_SECRET=<kong-sa-client_secret-to-be-replaced>" \
 -e "KEYCLOAK_DOMAIN=<keycloak-domain-to-be-replaced>" \

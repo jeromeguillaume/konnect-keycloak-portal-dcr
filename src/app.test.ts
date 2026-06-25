@@ -31,15 +31,23 @@ describe('dcr handlers', () => {
         organization_id: '426ac0a7-aeb6-4043-a404-c4bfe24f2706'
       }
 
-      jest.spyOn(mockAxios, 'post').mockResolvedValueOnce({
-        data: {
-          client_id: 'id',
-          client_id_issued_at: 1700825336,
-          client_secret: 'secret',
-          client_secret_expires_at: 0
-        },
-        status: 201
-      } as any)
+      // 1st POST mints the `kong-sa` service-account token, 2nd POST registers
+      // the client. The bridge no longer uses a Client Registration Initial
+      // Access Token (IAT) for create.
+      jest.spyOn(mockAxios, 'post')
+        .mockResolvedValueOnce({
+          data: { access_token: 'a-service-account-token' },
+          status: 200
+        } as any)
+        .mockResolvedValueOnce({
+          data: {
+            client_id: 'id',
+            client_id_issued_at: 1700825336,
+            client_secret: 'secret',
+            client_secret_expires_at: 0
+          },
+          status: 201
+        } as any)
 
       const resp = await app.inject({
         method: 'POST',
@@ -59,7 +67,19 @@ describe('dcr handlers', () => {
         client_secret_expires_at: 0
       }
       ))
-      expect(mockAxios.post).toHaveBeenCalledTimes(1)
+      // 1 call to fetch the service-account token + 1 call to register the client
+      expect(mockAxios.post).toHaveBeenCalledTimes(2)
+      // The client registration must use the freshly minted service-account
+      // bearer token, NOT an IAT.
+      expect(mockAxios.post).toHaveBeenLastCalledWith(
+        'clients-registrations/openid-connect',
+        expect.any(Object),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Authorization: 'Bearer a-service-account-token'
+          })
+        })
+      )
 
       await app.close()
     })
@@ -128,6 +148,7 @@ describe('dcr handlers', () => {
 
   describe('Delete', () => {
     it('succeed', async () => {
+      jest.spyOn(mockAxios, 'post').mockResolvedValueOnce({ data: { access_token: 'a-service-account-token' }, status: 200 } as any)
       jest.spyOn(mockAxios, 'delete').mockResolvedValueOnce({ status: 200 } as any)
 
       const resp = await app.inject({
@@ -144,6 +165,7 @@ describe('dcr handlers', () => {
     })
 
     it('succeed with both api key', async () => {
+      jest.spyOn(mockAxios, 'post').mockResolvedValueOnce({ data: { access_token: 'a-service-account-token' }, status: 200 } as any)
       jest.spyOn(mockAxios, 'delete').mockResolvedValueOnce({ status: 200 } as any)
 
       const resp = await app.inject({
@@ -176,12 +198,12 @@ describe('dcr handlers', () => {
 
   describe('Refresh Secret', () => {
     it('succeed', async () => {
-      jest.spyOn(mockAxios, 'post').mockResolvedValueOnce({
-        data: {
-          client_secret: 'secret'
-        },
-        status: 200
-      } as any)
+      // 1st POST mints the service-account token, 2nd POST regenerates the
+      // client secret, then a GET reads it back.
+      jest.spyOn(mockAxios, 'post')
+        .mockResolvedValueOnce({ data: { access_token: 'a-service-account-token' }, status: 200 } as any)
+        .mockResolvedValueOnce({ data: {}, status: 200 } as any)
+      jest.spyOn(mockAxios, 'get').mockResolvedValueOnce({ data: { value: 'secret' }, status: 200 } as any)
 
       const app = await init({ httpClient: mockAxios } as any)
 
@@ -198,7 +220,8 @@ describe('dcr handlers', () => {
         client_id: 'someID',
         client_secret: 'secret'
       }))
-      expect(mockAxios.post).toHaveBeenCalledTimes(1)
+      // 1 call to fetch the service-account token + 1 call to regenerate the secret
+      expect(mockAxios.post).toHaveBeenCalledTimes(2)
     })
 
     it('fails because of a wrong API token', async () => {

@@ -50,11 +50,53 @@ services:
                 }
             tags:
               - keycloak-dcr
+          # Mint a short-lived service-account token from the `kong-sa` client
+          # (which holds the `create-client` realm-management role) on every
+          # call, exactly like the Delete and Refresh routes below. The
+          # registration endpoint accepts either a Client Registration Initial
+          # Access Token (IAT) or a bearer token with `create-client`. Using the
+          # IAT here was a bug: an IAT is a consumable bootstrap credential that
+          # is decremented on each registration and expires, so create would
+          # start returning 401 once the count/expiration was reached.
+          - name: datakit
+            config:
+              debug: true
+              nodes:
+              - name: STATIC_INPUTS
+                type: static
+                values:
+                  client_id: ${{ env "DECK_KEYCLOAK_CLIENT_ID" }}
+                  client_secret: ${{ env "DECK_KEYCLOAK_CLIENT_SECRET" }}
+                  body: grant_type=client_credentials
+              - name: CONVERT_HEADER_BASE64
+                jq: |-
+                  {
+                    "Content-Type": ("application/x-www-form-urlencoded"),
+                    Authorization: ("Basic " + (.client_id + ":" + .client_secret |@base64))
+                  }
+                type: jq
+                inputs:
+                  client_id: STATIC_INPUTS.client_id
+                  client_secret: STATIC_INPUTS.client_secret
+              - name: AUTH_REQUEST
+                type: call
+                inputs:
+                  body: STATIC_INPUTS.body
+                  headers: CONVERT_HEADER_BASE64
+                url: ${{ env "DECK_KEYCLOAK_DOMAIN" }}/auth/realms/${{ env "DECK_KEYCLOAK_REALM" }}/protocol/openid-connect/token
+                method: POST
+              - name: UPSTREAM_AUTH_HEADER
+                type: jq
+                input: AUTH_REQUEST.body
+                output: service_request.headers
+                jq: |
+                  {
+                    Authorization: ("Bearer " + .access_token)
+                  }
+            tags:
+              - keycloak-dcr
           - name: request-transformer-advanced
             config:
-              add:
-                headers:
-                  - Authorization:"Bearer ${{ env "DECK_KEYCLOAK_CR_INITIAL_AT" }}"
               replace:
                 uri: "/auth/realms/${{ env "DECK_KEYCLOAK_REALM" }}/clients-registrations/openid-connect"
             tags:

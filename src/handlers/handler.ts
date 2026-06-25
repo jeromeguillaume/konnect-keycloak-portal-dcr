@@ -69,7 +69,16 @@ export function DCRHandlers (fastify: FastifyInstance, _: RegisterOptions, next:
         application_type: 'service'
       }
 
-      const headers = getHeaders(fastify.config.KEYCLOAK_CR_INITIAL_AT)
+      // Mint a short-lived service-account token from the `kong-sa` client
+      // (which holds the `create-client` realm-management role) on every call.
+      // The registration endpoint accepts either a Client Registration Initial
+      // Access Token (IAT) or a bearer token with `create-client`. Using the IAT
+      // here was a bug: an IAT is a consumable bootstrap credential that is
+      // decremented on each registration and expires, so create would start
+      // returning 401 once the count/expiration was reached. Minting a token per
+      // request makes create consistent with delete/refresh-secret below.
+      const accessToken = await getAccessToken(fastify, fastify.config.KEYCLOAK_CLIENT_ID, fastify.config.KEYCLOAK_CLIENT_SECRET)
+      const headers = getHeaders(accessToken)
       const url = 'clients-registrations/openid-connect'
       console.log("Keycloak request, url='POST /%s', headers=%j, body=%j", url, headers, payloadKeycloak)
       const response = await fastify.httpClient.post(
